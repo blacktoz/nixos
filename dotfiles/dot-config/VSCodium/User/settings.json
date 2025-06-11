@@ -1,0 +1,20 @@
+{
+    "workbench.colorTheme": "Solarized Light",
+    "[nix]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2
+    },
+    "nix.serverSettings": {},
+    "editor.acceptSuggestionOnEnter": "off",
+    "editor.tokenColorCustomizations": {
+        "[Solarized Light]": {
+            "textMateRules": [ {
+                "scope": "entity.other.attribute-name.multipart.nix",
+                "settings": {
+                "foreground": "#268bd2"
+                }
+            } ]
+        }
+    },
+    "editor.renderWhitespace": "trailing"
+}

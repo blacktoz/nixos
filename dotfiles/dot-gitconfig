@@ -1,0 +1,6 @@
+[user]
+  name = keiwop
+  email = keiwop.dev@gmail.com
+
+[init]
+  defaultBranch = dev

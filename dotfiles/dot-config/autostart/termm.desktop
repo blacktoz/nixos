@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=0.5.0
+Type=Application
+Encoding=UTF-8
+Name=termm
+Comment=GTK3 terminal which can be in windowed or drop-down mode
+Exec=termm
+Icon=termm_home
+Categories=GNOME;GTK;System;Utility;TerminalEmulator;
+StartupNotify=true
+NoDisplay=true

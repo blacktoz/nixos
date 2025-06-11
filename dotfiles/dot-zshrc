@@ -9,7 +9,7 @@ load_full_zsh=false
 
 
 ################################################################################
-#Prompt
+# Prompt
 ################################################################################
 
 autoload -Uz promptinit
@@ -22,100 +22,100 @@ RPROMPT="%{$fg_bold[$prompt_user_color]%}%~ %{$fg[magenta]%}- %{$fg_bold[cyan]%}
 
 
 ################################################################################
-#Options
-#http://zsh.sourceforge.net/Doc/Release/Options.html
+# Options
+# http://zsh.sourceforge.net/Doc/Release/Options.html
 ################################################################################
 
-#Use case-insensitive globbing
+# Use case-insensitive globbing
 unsetopt CASE_GLOB
-#Let the completion expand the alias to find the arguments of the command
+# Let the completion expand the alias to find the arguments of the command
 unsetopt COMPLETE_ALIASES
-#Complete the word where the cursor is positionned
+# Complete the word where the cursor is positionned
 setopt COMPLETE_IN_WORD
-#Use the char '#', '~' and '^' for pattern search (unquoted '~' produces home expansion)
+# Use the char '#', '~' and '^' for pattern search (unquoted '~' produces home expansion)
 setopt EXTENDED_GLOB
-#Display the completions in a regular grid
+# Display the completions in a regular grid
 setopt LIST_TYPES
-#Always show the completion menu with ambiguous completions (instead of typing once more on tab)
+# Always show the completion menu with ambiguous completions (instead of typing once more on tab)
 setopt MENU_COMPLETE
-#Should be turned off when SHARE_HISTORY is in use
+# Should be turned off when SHARE_HISTORY is in use
 unsetopt APPEND_HISTORY
-#Append the commands to the history like APPEND_HISTORY with a timestamp and import new commands
+# Append the commands to the history like APPEND_HISTORY with a timestamp and import new commands
 setopt SHARE_HISTORY
-#Report the status of background jobs immediatly
+# Report the status of background jobs immediatly
 setopt NOTIFY
-#Print a warning when the mail file has been accessed
+# Print a warning when the mail file has been accessed
 setopt MAIL_WARNING
-#Exit a shell without any care for the suspended or background jobs
+# Exit a shell without any care for the suspended or background jobs
 setopt NO_CHECK_JOBS
 setopt NOHUP
-#Silent the shell in case of match not found
+# Silent the shell in case of match not found
 setopt NULL_GLOB
-#With pattern search, sort the filenames numerically
+# With pattern search, sort the filenames numerically
 setopt NUMERIC_GLOB_SORT
-#Print the exit value of a program if it's non-zero
+# Print the exit value of a program if it's non-zero
 setopt PRINT_EXIT_VALUE
-#Expand "foo${xx}bar" with xx set to (a b c) to "fooabar foobbar foocbar"
-setopt RC_EXPAND_PARAM 	#Doesn't seem to work
-#Enable the line editor
+# Expand "foo${xx}bar" with xx set to (a b c) to "fooabar foobbar foocbar"
+setopt RC_EXPAND_PARAM     # Doesn't seem to work
+# Enable the line editor
 setopt ZLE
-#Automaticaly add the dirs visited with "cd" to the directory stack
+# Automaticaly add the dirs visited with "cd" to the directory stack
 setopt AUTOPUSHD PUSHDMINUS PUSHDSILENT PUSHD_IGNORE_DUPS
 
 
 ################################################################################
-#Completion
-#http://zsh.sourceforge.net/Doc/Release/Completion-System.html
+# Completion
+# http://zsh.sourceforge.net/Doc/Release/Completion-System.html
 ################################################################################
 
 autoload -Uz compinit zsh/complist
 compinit
-#Show the menu when at least 1 choice is proposed
+# Show the menu when at least 1 choice is proposed
 zstyle ':completion:*' menu select=1
-#Force rehash for completing newly installed programs
+# Force rehash for completing newly installed programs
 zstyle ':completion:*' rehash true
-#Don't show the directories of $cdpath in the completion of cd
+# Don't show the directories of $cdpath in the completion of cd
 zstyle ':completion:*:*:cd:*' tag-order local-directories path-directories named-directories directory-stack
-#Order of types of completion to try, expand the aliases first
+# Order of types of completion to try, expand the aliases first
 zstyle ':completion:*' completer _expand_alias _complete _correct _approximate _expand
-#Use the same colours as ls
+# Use the same colours as ls
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-#Match for case-insensitive completion
+# Match for case-insensitive completion
 zstyle ':completion:*' matcher-list '' '+m:{a-z}={A-Z}' '+m:{A-Z}={a-z}'
-#Set the verbose mode
+# Set the verbose mode
 zstyle ':completion:*' verbose yes
-#Use the default list separator
+# Use the default list separator
 zstyle ':completion:*' list-separator '--'
-#Use completion on the .. dir
+# Use completion on the .. dir
 zstyle ':completion:*' special-dirs '..'
-#Make the completion groups separated
+# Make the completion groups separated
 zstyle ':completion:*' group-name ''
-#Set the order of the completion groups proposed (type "cd<TAB>" to see)
+# Set the order of the completion groups proposed (type "cd<TAB>" to see)
 zstyle ':completion:*' group-order aliases functions builtins commands parameters
 
-#Colorize the list of proposed completions
+# Colorize the list of proposed completions
 zstyle ':completion:*:aliases'  list-colors '=*=01;35'
 zstyle ':completion:*:functions'  list-colors '=*=01;34'
 zstyle ':completion:*:builtins'  list-colors '=*=01;31'
 zstyle ':completion:*:commands'  list-colors '=*=01;32'
 zstyle ':completion:*:parameters'  list-colors '=*=01;33'
 
-#Change the format and color of some messages
-zstyle ':completion:*:descriptions' format $'\e[01;36m%d:\e[00m' 	#(type "cd<TAB>")
-zstyle ':completion:*:warnings' format $'\e[01;31mNo matches for:\e[00m \e[01;33m%d\e[00m' #(type "abcdefgh<TAB>")
-zstyle ':completion:*:messages' format $'\e[01;32m%d\e[00m' 		#untested
-zstyle ':completion:*' select-prompt '%SSelection at %p%s' 			#(type "ls -<TAB>" or "man <TAB>")
-zstyle ':completion:*' auto-description 'specify: %d' 				#untested
+# Change the format and color of some messages
+zstyle ':completion:*:descriptions' format $'\e[01;36m%d:\e[00m'     # (type "cd<TAB>")
+zstyle ':completion:*:warnings' format $'\e[01;31mNo matches for:\e[00m \e[01;33m%d\e[00m' # (type "abcdefgh<TAB>")
+zstyle ':completion:*:messages' format $'\e[01;32m%d\e[00m'         # untested
+zstyle ':completion:*' select-prompt '%SSelection at %p%s'             # (type "ls -<TAB>" or "man <TAB>")
+zstyle ':completion:*' auto-description 'specify: %d'                 # untested
 
-#Change the color of options for commands (type "ls -<TAB>" or "date -<TAB>")
+# Change the color of options for commands (type "ls -<TAB>" or "date -<TAB>")
 zstyle ':completion:*:options:*' list-colors '=^(-- *)=01;31' '=(#b)(--) *=01;35=01;35'
-#Change the color of previous dir for cd (type "cd -<TAB>")
+# Change the color of previous dir for cd (type "cd -<TAB>")
 zstyle ':completion:*:*:cd:*' list-colors '=(#b)([0-9]#) (--) *=01;35=01;31=01;35'
-#Change the list colors for tar (type "tar -<TAB>")
+# Change the list colors for tar (type "tar -<TAB>")
 zstyle ':completion:*:*:tar:*' list-colors '=(#b)([a-zA-Z]#) #(--) *=01;35=01;31=01;35'
-#Make kill a bit nicer (type "kill <TAB>")
+# Make kill a bit nicer (type "kill <TAB>")
 zstyle ':completion:*:*:kill:*' list-colors '=(#b) #([0-9]#)*( *[a-zA-Z0-9_-\(\)<>])*=01;32=01;31=01;35'
-#Show the man sections as separated
+# Show the man sections as separated
 zstyle ':completion:*:manuals' separate-sections true
 
 
@@ -126,57 +126,57 @@ zstyle ':completion:*:manuals' separate-sections true
 
 # Use Kate if a GUI is available
 if [[ -n $DISPLAY ]]; then
-	export EDITOR=kate
+    export EDITOR=kate
 else
-	export EDITOR=vi
+    export EDITOR=vi
 fi
 
 export MANWIDTH=${MANWIDTH:-80}
-#Only show the last 10 visited dirs (type "cd -<TAB>")
+# Only show the last 10 visited dirs (type "cd -<TAB>")
 export DIRSTACKSIZE=10
 export DIRSTACKFILE=~/.zdirs
 export HISTFILE=$HOME/.zsh_history
 export HISTSIZE=16777216
 export SAVEHIST=16777216
-#Default chars used to define a word.
+# Default chars used to define a word.
 export WORDCHARS="*?_-.[]~=/&;!#$%^(){}<>"
-#Variables to calculate the time a command took to execute (see the hooks functions)
+# Variables to calculate the time a command took to execute (see the hooks functions)
 typeset -ig _preexec=$(date '+%s%N' | cut -b1-13)
 typeset -ig _postexec=$(date '+%s%N' | cut -b1-13)
 
 
 ################################################################################
-#Path
+# Path
 ################################################################################
 
-#All the directories in /_ are accessible with cd from anywhere
+# All the directories in /_ are accessible with cd from anywhere
 cdpath=(/_ /data)
 
 path=($path /sbin /usr/sbin /_/bin /_/src/scripts /_/src/python /_/dev/kbd/bin /_/opt/riscv32ec/bin)
 path=($path /opt/intel/bin /opt/altera/quartus/bin /opt/esp-open-sdk/xtensa-lx106-elf/bin)
 ld_library_path=($ld_library_path /_/lib /_/src/kbd/bin/lib /opt/intel/lib /opt/esp-open-sdk/xtensa-lx106-elf/lib /_/opt/riscv32ec/lib)
 
-#Remove the duplicates from the path
+# Remove the duplicates from the path
 typeset -U path
 
 
 ################################################################################
-#Aliases
+# Aliases
 ################################################################################
 alias ll="ls -lhpF --color=auto --time-style=+'%Y-%m-%d %H:%M'"
 #ll sorted by time, oldest first
 alias l="ll -tr"
-#ll with the recursive option
+# ll with the recursive option
 alias lll="ll -CR"
-#ll showing the hidden files
+# ll showing the hidden files
 alias la="ll -a"
-#Show the last 20 entries of the journal log
+# Show the last 20 entries of the journal log
 alias lj="journalctl -b --user | tail -20"
-#Show the ports used on the machine
+# Show the ports used on the machine
 alias lp="sudo netstat -plnt"
 
-#Use a global alias when you want to use your alias in a command
-#eg: "cd ..."
+# Use a global alias when you want to use your alias in a command
+# eg: "cd ..."
 alias -g ...="../.."
 alias -g ....="../../.."
 alias -g .....="../../../.."
@@ -184,19 +184,19 @@ alias -g .....="../../../.."
 alias mkd="mkdir_cd"
 alias mountt="mount | column -t"
 
-#Forgot to add sudo at the beginning of your command? Ask nicely this time
+# Forgot to add sudo at the beginning of your command? Ask nicely this time
 alias plz='eval "sudo $(fc -ln -1)"'
 
-#Print the top10 of the most used commands
+# Print the top10 of the most used commands
 alias top10="cat ~/.zsh_history | cut -d ' ' -f 1 | sort | uniq -c | sort -rn | head -n 10"
 
-#Rsync over the network
+# Rsync over the network
 alias rs="rsync -avP --info=progress2  keiwop@nibbler:/_/tmp/\* ."
-#Copy a filesystem
+# Copy a filesystem
 alias rs_bkp="rsync -xaHAWXS --info=progress2 --numeric-ids"
 alias rs_local="rsync -xaHAWXS --no-compress --info=progress2 --numeric-ids"
 
-#See the functions tar_compress and tar_decompress
+# See the functions tar_compress and tar_decompress
 alias tarc="tar_compress"
 alias tarx="tar_decompress"
 
@@ -212,10 +212,10 @@ alias watch_sensors="watch -n 1 'sudo sensors'"
 alias watch_dmesg="watch -n 1 'dmesg | tail -n 16'"
 alias watch_temp="watch -n 1 cat /sys/class/thermal/thermal_zone*/temp"
 
-#¡Hola!
+# ¡Hola!
 alias valgringo="valgrind -v --leak-check=full --show-reachable=yes"
 
-#Network stuff
+# Network stuff
 alias pingg="ping 8.8.8.8"
 alias redirect_port="sudo iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 5000"
 alias listen_port="nc -vl 4242"
@@ -223,7 +223,7 @@ alias listen_port="nc -vl 4242"
 # Remove a host from the known_host file
 alias ssh_purge="ssh-keygen -R hostname"
 
-#Some git aliases
+# Some git aliases
 alias gs="git status"
 alias gd="git diff"
 alias git_ssh="git remote set-url origin git@github.com:$(whoami)/project.git"
@@ -231,7 +231,7 @@ alias git_bad_info="git commit --amend --reset-author"
 alias git_didnt_pull="git reset HEAD~1 --soft"
 alias git_ignore_file="git update-index --skip-worktree"
 
-#Touch recursively the files of the current dir
+# Touch recursively the files of the current dir
 alias touch_all="find . -exec touch {} \;"
 
 # Check for differences between the hardware clock and the one defined using ntp
@@ -254,11 +254,11 @@ alias space_to_dot='for file in *; do mv "$file" "${file// /.}"; done'
 
 # Logout from current DE
 alias logout="loginctl terminate-user $USER"
-#Reboot on another efi loader
+# Reboot on another efi loader
 alias boot_windows="sudo efibootmgr -n 0; sudo reboot"
-#Kill all the processes of the user
+# Kill all the processes of the user
 alias kill_myself="pkill -u $(whoami)"
-#Turn system off
+# Turn system off
 alias off="sudo systemctl poweroff"
 
 # Disable ext4 journal for sdcards (Can help with shitty sdcards)
@@ -268,23 +268,23 @@ alias ext4_no_journal="sudo mke2fs -t ext4 -O \^has_journal /dev/sdz1"
 alias update_weather="wget --directory-prefix=/tmp https://celestrak.org/NORAD/elements/weather.txt; cp -v /tmp/weather.txt ~/.wxtoimg/weather.txt"
 
 if [[ "$os_id" == "arch" ]]; then
-	# Delete the lock put in place by pacman
-	alias pac_unlock="sudo rm -vf /var/lib/pacman/db.lck"
-	# Find the app owning a file
-	alias pac_find_owner="sudo pacman -Qo"
-	# Pacman removed the --force option
-	alias pac_force_install="yay -S --overwrite='*'"
-	alias pac_list="LC_ALL=C pacman -Qi | awk '/^Name/{name=\$3} /^Installed Size/{print \$4\$5, name}' | sort -h"
-	alias pac_unknown_trust="sudo pacman -S archlinux-keyring"
-	alias pac_update_mirrors="sudo reflector --country France --country Germany --age 2 --sort rate --verbose --save /etc/pacman.d/mirrorlist.ranked"
-	alias pac_heavy_clean="sudo pacman -Rns $(pacman -Qtdq)"
+    # Delete the lock put in place by pacman
+    alias pac_unlock="sudo rm -vf /var/lib/pacman/db.lck"
+    # Find the app owning a file
+    alias pac_find_owner="sudo pacman -Qo"
+    # Pacman removed the --force option
+    alias pac_force_install="yay -S --overwrite='*'"
+    alias pac_list="LC_ALL=C pacman -Qi | awk '/^Name/{name=\$3} /^Installed Size/{print \$4\$5, name}' | sort -h"
+    alias pac_unknown_trust="sudo pacman -S archlinux-keyring"
+    alias pac_update_mirrors="sudo reflector --country France --country Germany --age 2 --sort rate --verbose --save /etc/pacman.d/mirrorlist.ranked"
+    alias pac_heavy_clean="sudo pacman -Rns $(pacman -Qtdq)"
 fi
 
-#Replaced by functions
+# Replaced by functions
 #alias chmod_dir="find /path/to/dir -type d -print0 | xargs -0 chmod 755"
 #alias chmod_files="find /path/to/dir -type f -print0 | xargs -0 chmod 644"
 
-#There is a function now
+# There is a function now
 #alias create_efistub="sudo efibootmgr -d /dev/sda -p 1 -c -L 'arch_efi' -l /arch/vmlinuz-linux -u 'root=/dev/sda2 rw rootflags=noatime,discard elevator=noop initrd=/arch/initramfs-linux.img'"
 
 
@@ -294,363 +294,363 @@ fi
 # I'm not using these aliases anymore or not often
 # They are kept here to be removed easily when working on slow systems
 
-# FIXME: lm lo lk are broken
-#Show the files (and dirs) in all the subdirectories modified in the last 5mn
-alias lm="ll **/*(.mm-5)"
-alias lama="ll **/*(D.mm-5)" 	#Same but including all the hidden files
-#Show the last 16 files modified in all the subdirectories
-alias lo="ll **/*(.om[1,16])"
-alias llo="ll **/*(D.om[1,16])" 	#Same but including all the hidden files
-#Show the files bigger than 42MB in all the subdirectories
-alias lk="ll **/*(.Lm+42)"
-alias llk="ll **/*(D.Lm+42)" 	#Same but including all the hidden files
+if [[ $load_full_zsh == true ]]; then
+    # FIXME: lm lo lk are broken
+    # Show the files (and dirs) in all the subdirectories modified in the last 5mn
+    alias lm="ll **/*(.mm-5)"
+    alias lama="ll **/*(D.mm-5)"     # Same but including all the hidden files
+    # Show the last 16 files modified in all the subdirectories
+    alias lo="ll **/*(.om[1,16])"
+    alias llo="ll **/*(D.om[1,16])"     # Same but including all the hidden files
+    # Show the files bigger than 42MB in all the subdirectories
+    alias lk="ll **/*(.Lm+42)"
+    alias llk="ll **/*(D.Lm+42)"     # Same but including all the hidden files
 
-alias tarxfat="sudo tar --strip-components=4 --no-same-owner -xzpvf"
-
-
-#Make the boot.img for an Android device
-alias ramdisko="find . | cpio -o -H newc | gzip > ../initramfs_.cpio.gz"
-alias ramdiski="gunzip -c ../initramfs.cpio.gz | cpio -i"
-alias mkimg="mkbootimg --kernel zImage --ramdisk initramfs_.cpio.gz --base 0x40000000 --cmdline 'console=ttyS0,115200 rw init=/init loglevel=4 vmalloc=384M ion_reserve=128M' -o new_block.img"
+    alias tarxfat="sudo tar --strip-components=4 --no-same-owner -xzpvf"
 
 
-#Configure a serial bluetooth adapter
-alias bt_set_name="sudo echo 'AT+NAMEkeiwop' >> /dev/ttyUSB0"
-alias bt_set_pin="sudo echo 'AT+PIN0000' >> /dev/ttyUSB0"
-alias bt_set_baud="sudo echo 'AT+BAUD4' >> /dev/ttyUSB0"
+    # Make the boot.img for an Android device
+    alias ramdisko="find . | cpio -o -H newc | gzip > ../initramfs_.cpio.gz"
+    alias ramdiski="gunzip -c ../initramfs.cpio.gz | cpio -i"
+    alias mkimg="mkbootimg --kernel zImage --ramdisk initramfs_.cpio.gz --base 0x40000000 --cmdline 'console=ttyS0,115200 rw init=/init loglevel=4 vmalloc=384M ion_reserve=128M' -o new_block.img"
 
 
-#Program a clone of arduino pro micro (A Makefile is now available in your local newspaper)
-alias prog_32u4="avrdude -v -v -v -v -D -P/dev/ttyACM0 -cavr109 -b57600 -patmega32u4 -Uflash:w:firmware:i"
+    # Configure a serial bluetooth adapter
+    alias bt_set_name="sudo echo 'AT+NAMEkeiwop' >> /dev/ttyUSB0"
+    alias bt_set_pin="sudo echo 'AT+PIN0000' >> /dev/ttyUSB0"
+    alias bt_set_baud="sudo echo 'AT+BAUD4' >> /dev/ttyUSB0"
 
-#Make a gif, badly
-alias video_from_jpg="ffmpeg -f image2 -start_number 1982 -r 7 -i DSC0%d.JPG -y -r 25 -vcodec mpeg4 test.mp4"
 
-#Just in case autotfs doesn't work
-alias mount_arch_desktop="sudo mount -t nfs 192.168.1.42:/ /_/nfs/hosts/arch_desktop"
+    # Program a clone of arduino pro micro (A Makefile is now available in your local newspaper)
+    alias prog_32u4="avrdude -v -v -v -v -D -P/dev/ttyACM0 -cavr109 -b57600 -patmega32u4 -Uflash:w:firmware:i"
 
-#Network stuff
-alias ssh_router="ssh -oKexAlgorithms=+diffie-hellman-group1-sha1 ${router_user}@${router_addr}"
-alias fac_mtu="sudo ip link set wlp3s0 mtu 1000; sudo ip link set tap0 mtu 1000"
-alias get_seedbox_file="wget --user=${seedbox_user} --password=${seedbox_passwd} --no-check-certificate -r --reject='index.html*' -nH -np --cut-dirs=2"
-alias vbox_fix_dns="VBoxManage modifyvm 'Ubuntu 16.04' --natdnshostresolver1 on"
+    # Make a gif, badly
+    alias video_from_jpg="ffmpeg -f image2 -start_number 1982 -r 7 -i DSC0%d.JPG -y -r 25 -vcodec mpeg4 test.mp4"
 
-#Some git aliases
-alias pushm="git push origin HEAD:master"
-alias pullm="git pull origin master"
+    # Just in case autotfs doesn't work
+    alias mount_arch_desktop="sudo mount -t nfs 192.168.1.42:/ /_/nfs/hosts/arch_desktop"
 
-#Replace the js used by the the current instance of Gnome
-alias use_custom_gjs="GNOME_SHELL_JS=/_/dev/gnome/gnome_shell gnome-shell --replace"
+    # Network stuff
+    alias ssh_router="ssh -oKexAlgorithms=+diffie-hellman-group1-sha1 ${router_user}@${router_addr}"
+    alias fac_mtu="sudo ip link set wlp3s0 mtu 1000; sudo ip link set tap0 mtu 1000"
+    alias get_seedbox_file="wget --user=${seedbox_user} --password=${seedbox_passwd} --no-check-certificate -r --reject='index.html*' -nH -np --cut-dirs=2"
+    alias vbox_fix_dns="VBoxManage modifyvm 'Ubuntu 16.04' --natdnshostresolver1 on"
 
-#Logout from Gnome
-alias logout_gnome="DISPLAY=:0 gnome-session-quit --force-logout"
-#Logout from KDE
-alias logout_kde="DISPLAY=:0 qdbus org.kde.ksmserver /KSMServer logout 0 0 0"
+    # Some git aliases
+    alias pushm="git push origin HEAD:master"
+    alias pullm="git pull origin master"
 
-#D-BUS stuff
-alias dbus_services="dbus-send --session --dest=org.freedesktop.DBus --type=method_call --print-reply /org/freedesktop/DBus org.freedesktop.DBus.ListNames"
-alias dbus_services_system="dbus-send --system --dest=org.freedesktop.DBus --type=method_call --print-reply /org/freedesktop/DBus org.freedesktop.DBus.ListNames"
+    # Replace the js used by the the current instance of Gnome
+    alias use_custom_gjs="GNOME_SHELL_JS=/_/dev/gnome/gnome_shell gnome-shell --replace"
 
-# Fixup old code using progmem for new version of avr-gcc
-alias fix_progmem="sed -i 's/^PROGMEM/const PROGMEM/g' *"
-# Dump the program of an AVR into a Intel hex file
-alias dump_avr="avrdude -c usbasp -p attiny85 -U flash:r:dump.hex:i"
+    # Logout from Gnome
+    alias logout_gnome="DISPLAY=:0 gnome-session-quit --force-logout"
+    # Logout from KDE
+    alias logout_kde="DISPLAY=:0 qdbus org.kde.ksmserver /KSMServer logout 0 0 0"
 
-# Change the state the discrete GPU
-alias gpu_on="sudo tee /proc/acpi/bbswitch <<< ON"
-alias gpu_off="sudo tee /proc/acpi/bbswitch <<< OFF"
+    # D-BUS stuff
+    alias dbus_services="dbus-send --session --dest=org.freedesktop.DBus --type=method_call --print-reply /org/freedesktop/DBus org.freedesktop.DBus.ListNames"
+    alias dbus_services_system="dbus-send --system --dest=org.freedesktop.DBus --type=method_call --print-reply /org/freedesktop/DBus org.freedesktop.DBus.ListNames"
 
-# Fix for Xbox One S controller not being pairable via bluetooth
-alias xbox_disable_ertm="echo 1 | sudo tee /sys/module/bluetooth/parameters/disable_ertm"
+    # Fixup old code using progmem for new version of avr-gcc
+    alias fix_progmem="sed -i 's/^PROGMEM/const PROGMEM/g' *"
+    # Dump the program of an AVR into a Intel hex file
+    alias dump_avr="avrdude -c usbasp -p attiny85 -U flash:r:dump.hex:i"
 
-# Mount a CryFS encrypted directory
-alias mount_wallet="cryfs /_/usr/crypto/cryfs/wallet /_/usr/crypto/cryfs/wallet_mnt"
-alias umount_wallet="fusermount -u /_/usr/crypto/cryfs/wallet_mnt"
+    # Change the state the discrete GPU
+    alias gpu_on="sudo tee /proc/acpi/bbswitch <<< ON"
+    alias gpu_off="sudo tee /proc/acpi/bbswitch <<< OFF"
 
-# Backup the database from the Authenticator Android app
-alias backup_authenticator="adb pull /data/data/com.google.android.apps.authenticator2/databases/databases /_/usr/authenticator"
+    # Fix for Xbox One S controller not being pairable via bluetooth
+    alias xbox_disable_ertm="echo 1 | sudo tee /sys/module/bluetooth/parameters/disable_ertm"
 
-# Set up Wireshark for USB monitoring
-alias wireshark_usb="sudo modprobe usbmon; sudo setfacl -m u:keiwop:r /dev/usbmon*; wireshark"
+    # Mount a CryFS encrypted directory
+    alias mount_wallet="cryfs /_/usr/crypto/cryfs/wallet /_/usr/crypto/cryfs/wallet_mnt"
+    alias umount_wallet="fusermount -u /_/usr/crypto/cryfs/wallet_mnt"
 
-# Print a list of hex number for 0 to 0xff
-alias print_hex="python -c \"for i in range(0, 256): print(f'{i:#02x},', end='')\""
+    # Backup the database from the Authenticator Android app
+    alias backup_authenticator="adb pull /data/data/com.google.android.apps.authenticator2/databases/databases /_/usr/authenticator"
 
-alias adb_wifi='adb tcpip 5555; android_addr=$(adb shell ip -f inet addr show wlan0); adb connect $android_addr:5555'
+    # Set up Wireshark for USB monitoring
+    alias wireshark_usb="sudo modprobe usbmon; sudo setfacl -m u:keiwop:r /dev/usbmon*; wireshark"
 
-alias link="ld -o hello -lc -dynamic-linker /lib/ld-linux.so.2 hello.o -e main"
+    # Print a list of hex number for 0 to 0xff
+    alias print_hex="python -c \"for i in range(0, 256): print(f'{i:#02x},', end='')\""
 
-alias msi_fan_off="sudo isw -s 0x72 0"
-alias msi_battery_100="sudo isw -s 0xef 228"
-alias msi_battery_60="sudo isw -s 0xef 188"
+    alias adb_wifi='adb tcpip 5555; android_addr=$(adb shell ip -f inet addr show wlan0); adb connect $android_addr:5555'
 
+    alias link="ld -o hello -lc -dynamic-linker /lib/ld-linux.so.2 hello.o -e main"
+
+    alias msi_fan_off="sudo isw -s 0x72 0"
+    alias msi_battery_100="sudo isw -s 0xef 228"
+    alias msi_battery_60="sudo isw -s 0xef 188"
+fi # load_full_zsh
 
 ################################################################################
-#Functions
+# Functions
 ################################################################################
 
-#Print the duration given a number of seconds + milliseconds
-#Example: 63123 returns 1:03.123
+# Print the duration given a number of seconds + milliseconds
+# Example: 63123 returns 1:03.123
 format_duration(){
-	duration=$1
-	millis=${duration[-3, -1]}
-	
-	if [[ $duration -ge 1000 ]]; then
-		duration=${duration[1, -4]}
-		hours=$(( $duration / 3600 ))
-		duration=$(( $duration % 3600 ))
-		minutes=$(( $duration / 60 ))
-		duration=$(( $duration % 60 ))
-		seconds=$duration
-	else
-		hours=0
-		minutes=0
-		seconds=0
-	fi
-	
-	result=""
-	
-	if [[ $hours -ge 1 ]]; then
-		minutes=${(l:2::0:)minutes}
-		seconds=${(l:2::0:)seconds}
-		result="$hours:$minutes:"
-	elif [[ $minutes -ge 1 ]]; then
-		seconds=${(l:2::0:)seconds}
-		result="$minutes:"
-	fi
+    duration=$1
+    millis=${duration[-3, -1]}
+    
+    if [[ $duration -ge 1000 ]]; then
+        duration=${duration[1, -4]}
+        hours=$(( $duration / 3600 ))
+        duration=$(( $duration % 3600 ))
+        minutes=$(( $duration / 60 ))
+        duration=$(( $duration % 60 ))
+        seconds=$duration
+    else
+        hours=0
+        minutes=0
+        seconds=0
+    fi
+    
+    result=""
+    
+    if [[ $hours -ge 1 ]]; then
+        minutes=${(l:2::0:)minutes}
+        seconds=${(l:2::0:)seconds}
+        result="$hours:$minutes:"
+    elif [[ $minutes -ge 1 ]]; then
+        seconds=${(l:2::0:)seconds}
+        result="$minutes:"
+    fi
 
-	millis=${(l:3::0:)millis}
+    millis=${(l:3::0:)millis}
 
-	result="${result}${seconds}.${millis}"
-	echo -n "$result"
+    result="${result}${seconds}.${millis}"
+    echo -n "$result"
 }
 
 format_size(){
-#	TODO format size in KiB instead of KB
-	size=$1
-	size_formatted=""
-	
-	if [[ $2 = "M" ]]; then
-		size=$(( $size * 1000 ))
-	fi
-	
-	size_GB=$(( $size / 1000000 ))
-	size=$(( $size % 1000000 ))
-	size_MB=$(( $size / 1000 ))
-	size=$(( $size % 1000 ))
-	
-	if [[ $size_GB -gt 0 ]]; then
-		size_formatted="${size_GB}.${size_MB}G"
-	elif [[ $size_MB -gt 0 ]]; then
-		rest=$(( $size / 100 ))
-		size_formatted="${size_MB}.${rest}M"
-	else
-		size_formatted="${size}K"
-	fi
-	
-	printf "$size_formatted"
+    # TODO format size in KiB instead of KB
+    size=$1
+    size_formatted=""
+
+    if [[ $2 = "M" ]]; then
+        size=$(( $size * 1000 ))
+    fi
+
+    size_GB=$(( $size / 1000000 ))
+    size=$(( $size % 1000000 ))
+    size_MB=$(( $size / 1000 ))
+    size=$(( $size % 1000 ))
+
+    if [[ $size_GB -gt 0 ]]; then
+        size_formatted="${size_GB}.${size_MB}G"
+    elif [[ $size_MB -gt 0 ]]; then
+        rest=$(( $size / 100 ))
+        size_formatted="${size_MB}.${rest}M"
+    else
+        size_formatted="${size}K"
+    fi
+
+    printf "$size_formatted"
 }
 
 
-#It isn't possible to be more self-explanatory
+# It isn't possible to be more self-explanatory
 mkdir_cd(){
-	mkdir -p $1
-	cd $1
+    mkdir -p $1
+    cd $1
 }
 
 
-#Check if the network is functionning
-#Test the LAN by pinging the router, then the WAN by pinging a DNS server of Google
-#Lastly, ping www.google.com to see if I can get through the DNS
+# Check if the network is functionning
+# Test the LAN by pinging the router, then the WAN by pinging a DNS server of Google
+# Lastly, ping www.google.com to see if I can get through the DNS
 check_network(){
-	echo -n "LAN: "
-	print_ping_state "192.168.1.1"
-	
-	echo -n "WAN: "
-	print_ping_state "8.8.8.8"
-	
-	echo -n "DNS: "
-	print_ping_state "www.google.com"
+    echo -n "LAN: "
+    print_ping_state "192.168.1.1"
+
+    echo -n "WAN: "
+    print_ping_state "8.8.8.8"
+
+    echo -n "DNS: "
+    print_ping_state "www.google.com"
 }
 
 
-#Send a single ping and wait 2 seconds for the response
-#If it came back, good for you
+# Send a single ping and wait 2 seconds for the response
+# If it came back, good for you
 print_ping_state(){
-	if (ping -W 2 -c 1 $1 &> /dev/null); then
-		echo "OK"
-	else
-		echo "NOPE"
-	fi
+    if (ping -W 2 -c 1 $1 &> /dev/null); then
+        echo "OK"
+    else
+        echo "NOPE"
+    fi
 }
 
 
-#Put the machine in suspend mode at the end of the timer
-#The timer can be the first argument in seconds
+# Put the machine in suspend mode at the end of the timer
+# The timer can be the first argument in seconds
 machine_suspend(){
-	declare -i timer
-	timer=0
-	if [[ $1 -ge 1 ]]; then
-		timer=$1
-	else
-		timer=2222
-	fi
-	echo "Reducing screen brightness"
-	echo 18000 | sudo tee /sys/class/backlight/intel_backlight/brightness
-	echo "Sleeping in $timer seconds"
-	sleep $timer
-	systemctl suspend
-	echo '\tGoing to sleep'
-	echo '\tBye'
-	sleep 2
+    declare -i timer
+    timer=0
+    if [[ $1 -ge 1 ]]; then
+        timer=$1
+    else
+        timer=2222
+    fi
+    echo "Reducing screen brightness"
+    echo 18000 | sudo tee /sys/class/backlight/intel_backlight/brightness
+    echo "Sleeping in $timer seconds"
+    sleep $timer
+    systemctl suspend
+    echo '\tGoing to sleep'
+    echo '\tBye'
+    sleep 2
 }
 
 
 # Print the hex value from a int passed as parameter
 hexof(){
     if [[ -n $1 ]]; then
-		if [[ $1 -le 0xff ]]; then
-			printf "0x%02x\n" $1
-		elif [[ $1 -le 0xffff ]]; then
-			printf "0x%04x\n" $1
-		else
-			printf "0x%x\n" $1
-		fi
+        if [[ $1 -le 0xff ]]; then
+            printf "0x%02x\n" $1
+        elif [[ $1 -le 0xffff ]]; then
+            printf "0x%04x\n" $1
+        else
+            printf "0x%x\n" $1
+        fi
     fi
 }
 
 
-#Compress the files passed as args in a .tar.gz
+# Compress the files passed as args in a .tar.gz
 tar_compress(){
-#	--create --gzip --same-permissions --verbose --file
-	tar_flags="-czpvf"
-	dir_name=$(basename $(pwd))
+    #--create --gzip --same-permissions --verbose --file
+    tar_flags="-czpvf"
+    dir_name=$(basename $(pwd))
 
-	if [[ -d $1 ]] && [[ -z $2 ]]; then
-		gz_name=$1
-		input_files=$1
-	elif [[ -f $1 ]] && [[ -z $2 ]]; then
-		gz_name=${1%%.*}
-		input_files=$1
-	else
-		gz_name=$dir_name
-		input_files=($@)
-	fi
-	
-	gz_file=$gz_name.tar.gz
-	if [[ -e $gz_file ]]; then
-		gz_file=${gz_name}_$(date +"%Y%m%d_%H%M%S").tar.gz
-	fi
-	
-	echo "Compressing files:"
-	tar $tar_flags $gz_file $input_files
-	echo -e "\nOutput file: ${gz_file}"
+    if [[ -d $1 ]] && [[ -z $2 ]]; then
+        gz_name=$1
+        input_files=$1
+    elif [[ -f $1 ]] && [[ -z $2 ]]; then
+        gz_name=${1%%.*}
+        input_files=$1
+    else
+        gz_name=$dir_name
+        input_files=($@)
+    fi
+
+    gz_file=$gz_name.tar.gz
+    if [[ -e $gz_file ]]; then
+        gz_file=${gz_name}_$(date +"%Y%m%d_%H%M%S").tar.gz
+    fi
+
+    echo "Compressing files:"
+    tar $tar_flags $gz_file $input_files
+    echo -e "\nOutput file: ${gz_file}"
 }
 
 
-#Decompress the archives passed as args in separate dirs
+# Decompress the archives passed as args in separate dirs
 tar_decompress(){
-	tar_flags="-xzpvf"
-	
-	for gz_file in $@; do
-		gz_name=${$(basename $gz_file)%%.*}
-		
-		gz_dir=$gz_name
-		if [[ -e $gz_dir ]]; then
-			gz_dir=${gz_name}_$(date +"%Y%m%d_%H%M%S")
-		fi
-		mkdir -p $gz_dir
-		
-		echo -e "\nUncompressing archive: ${gz_file}"
-		tar $tar_flags $gz_file -C $gz_dir
-		echo "Output dir: ${gz_dir}"
-	done
+    tar_flags="-xzpvf"
+
+    for gz_file in $@; do
+        gz_name=${$(basename $gz_file)%%.*}
+
+        gz_dir=$gz_name
+        if [[ -e $gz_dir ]]; then
+            gz_dir=${gz_name}_$(date +"%Y%m%d_%H%M%S")
+        fi
+        mkdir -p $gz_dir
+
+        echo -e "\nUncompressing archive: ${gz_file}"
+        tar $tar_flags $gz_file -C $gz_dir
+        echo "Output dir: ${gz_dir}"
+    done
 }
 
 
 # TODO: add nixos support
-#Clean up a bit the system
+# Clean up a bit the system
 clean_system(){
-	echo ""
-	df -h /
-	_root_info=($(df / | tail -n 1))
-	_used_bytes_before=${_root_info[3]}
-	
-	echo -e "\nCleaning pacman cache (keeping the last 2 versions)"
-	sudo paccache -rk 2
-	
-	echo -e "\nDeleting old logs"
-	sudo find /var/log/journal -name "system@*.journal" -delete > /dev/null
-	sudo find /var/log/journal -name "user-1000@*.journal" -delete > /dev/null
-	
-	echo -e "\nDeleting coredumps"
-	sudo rm -f /var/lib/systemd/coredump/core.*
-		
-#	echo -e "\nDeleting google-chrome cache"
-#	find ~/.config/google-chrome*/Default/File\ System/0* -delete > /dev/null
-#	find ~/.cache/google-chrome*/Default/Cache -delete > /dev/null
-	
-#	echo -e "\nDeleting files in ~/.cache"
-#	find ~/.cache/thumbnails -name "*.png" -delete > /dev/null
-	
-	echo ""
-	df -h /
-	
-	_root_info=($(df / | tail -n 1))
-	_used_bytes_after=${_root_info[3]}
-	(( _bytes_released = $_used_bytes_before - $_used_bytes_after ))
-	space_released=$(format_size $_bytes_released)
-	echo -e "\nSpace released on the system: $space_released"
+    echo ""
+    df -h /
+    _root_info=($(df / | tail -n 1))
+    _used_bytes_before=${_root_info[3]}
+
+    echo -e "\nCleaning pacman cache (keeping the last 2 versions)"
+    sudo paccache -rk 2
+
+    echo -e "\nDeleting old logs"
+    sudo find /var/log/journal -name "system@*.journal" -delete > /dev/null
+    sudo find /var/log/journal -name "user-1000@*.journal" -delete > /dev/null
+
+    echo -e "\nDeleting coredumps"
+    sudo rm -f /var/lib/systemd/coredump/core.*
+
+#    echo -e "\nDeleting google-chrome cache"
+#    find ~/.config/google-chrome*/Default/File\ System/0* -delete > /dev/null
+#    find ~/.cache/google-chrome*/Default/Cache -delete > /dev/null
+
+#    echo -e "\nDeleting files in ~/.cache"
+#    find ~/.cache/thumbnails -name "*.png" -delete > /dev/null
+
+    echo ""
+    df -h /
+
+    _root_info=($(df / | tail -n 1))
+    _used_bytes_after=${_root_info[3]}
+    (( _bytes_released = $_used_bytes_before - $_used_bytes_after ))
+    space_released=$(format_size $_bytes_released)
+    echo -e "\nSpace released on the system: $space_released"
 }
 
 
-#Set recursively the permissions of the directory $2
+# Set recursively the permissions of the directory $1
 chmod_dir(){
-	sudo find $2 -type d -print0 | sudo xargs -0 chmod $1
+    sudo find $1 -type d -print0 | sudo xargs -0 chmod $2
+}
+
+chmod_files(){
+    sudo find $1 -type f -print0 | sudo xargs -0 chmod $2
 }
 
 chmod_scripts(){
-	sudo find $1 -type f -name "*.sh" -print0 | sudo xargs -0 chmod 755
-}
-
-#Set recursively the permissions of files from the directory $1 to 644 and 755 for scripts
-chmod_files(){
-	sudo find $2 -type f -print0 | sudo xargs -0 chmod $1
+    sudo find $1 -type f -name "*.sh" -print0 | sudo xargs -0 chmod 755
 }
 
 
 # Set the terminal title (only for screen as of now)
 set_title(){
-	if [[ -n $STY ]]; then
-		echo -e "\033k${1}\033\\"
-	fi
+    if [[ -n $STY ]]; then
+        echo -e "\033k${1}\033\\"
+    fi
 }
 
 
 # Use the Internet connection from wifi/tethering and share it to a raspberry
 # directly connected to the Ethernet jack (No need for Ethernet crossover cable)
 share_internet(){
-	sudo ip link set enp3s0 up
-	sudo ip addr add 192.168.42.42/24 dev enp3s0
-	sudo sysctl net.ipv4.ip_forward=1
-	sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
-	sudo iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-	sudo iptables -A FORWARD -i enp3s0 -o wlan0 -j ACCEPT
-	
-	sudo iptables -I INPUT -p udp --dport 67 -i enp3s0 -j ACCEPT
-	sudo iptables -I INPUT -p udp --dport 53 -s 192.168.42.0/24 -j ACCEPT
-	sudo iptables -I INPUT -p tcp --dport 53 -s 192.168.42.0/24 -j ACCEPT
+    sudo ip link set enp3s0 up
+    sudo ip addr add 192.168.42.42/24 dev enp3s0
+    sudo sysctl net.ipv4.ip_forward=1
+    sudo iptables -t nat -A POSTROUTING -o wlan0 -j MASQUERADE
+    sudo iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+    sudo iptables -A FORWARD -i enp3s0 -o wlan0 -j ACCEPT
+
+    sudo iptables -I INPUT -p udp --dport 67 -i enp3s0 -j ACCEPT
+    sudo iptables -I INPUT -p udp --dport 53 -s 192.168.42.0/24 -j ACCEPT
+    sudo iptables -I INPUT -p tcp --dport 53 -s 192.168.42.0/24 -j ACCEPT
 }
 
 clean_shared_internet(){
-	sudo iptables -F
-	sudo iptables -t nat -F
+    sudo iptables -F
+    sudo iptables -t nat -F
 }
 
 connect_shared_internet(){
-	ip addr add 192.168.42.43/24 dev eth0
-	ip link set eth0 up
-	ip route add default via 192.168.42.42 dev eth0
+    ip addr add 192.168.42.43/24 dev eth0
+    ip link set eth0 up
+    ip route add default via 192.168.42.42 dev eth0
 }
 
 
@@ -660,121 +660,122 @@ connect_shared_internet(){
 # I'm not using these functions anymore or not often
 # They are kept here to be removed easily when working on slow systems
 
+if [[ $load_full_zsh == true ]]; then
+    # Create a script to debug problems at shutdown
+    # Basically writes dmesg to the log at the last moment possible
+    # Add this to your kernel cmdline: systemd.log_level=debug systemd.log_target=kmsg log_buf_len=4M enforcing=0
+    create_debug_script(){
+        _debug_script="/usr/lib/systemd/system-shutdown/debug.sh"
 
-# Create a script to debug problems at shutdown
-# Basically writes dmesg to the log at the last moment possible
-# Add this to your kernel cmdline: systemd.log_level=debug systemd.log_target=kmsg log_buf_len=4M enforcing=0
-create_debug_script(){
-	_debug_script="/usr/lib/systemd/system-shutdown/debug.sh"
-	
-	if ! [[ -e ${_debug_script} ]]; then
-		echo "Creating debug script ${_debug_script}"
-		sudo touch ${_debug_script}
-		sudo chmod 777 ${_debug_script}
-		cat >> ${_debug_script} <<-EOF
-		#! /bin/sh
-		mount -o remount,rw /
-		dmesg > /var/log/last_shutdown.log
-		mount -o remount,ro /
-		EOF
-	fi
-	
-	if [[ $1 == "force" ]]; then
-		sudo mv ${_debug_script} "${_debug_script}.bkp"
-		create_debug_script
-	fi
-}
+        if ! [[ -e ${_debug_script} ]]; then
+            echo "Creating debug script ${_debug_script}"
+            sudo touch ${_debug_script}
+            sudo chmod 777 ${_debug_script}
+            cat >> ${_debug_script} <<-EOF
+			#! /bin/sh
+			mount -o remount,rw /
+			dmesg > /var/log/last_shutdown.log
+			mount -o remount,ro /
+			EOF
+        fi
 
-# HACK: XXX: Warning, use at your own risk
-# If I write the same file over and over (a builroot boot img for example), at a
-# certain point the sdcard will just stop writing new data
-# So I write random data to the sdcard before writing the file passed in argument
-ddddd(){
-	if [[ -e $2 ]] && [[ -b $1 ]]; then
-		sudo dd if=/dev/urandom of=$1 count=16384
-		sync
-		sudo dd if=$2 of=$1 bs=4K
-		sync
-	fi
-}
+        if [[ $1 == "force" ]]; then
+            sudo mv ${_debug_script} "${_debug_script}.bkp"
+            create_debug_script
+        fi
+    }
 
-
-#Go to the parent dir
-#If there is an arg, go to $1 levels above the current directory
-..(){
-	typeset -i count=1
-	
-	if [[ $1 -gt 1 ]]; then
-		count=$1
-	fi
-	
-	for ((i = 0; i < $count; ++i)); do
-		cd ..
-	done
-	
-}
+    # HACK: XXX: Warning, use at your own risk
+    # If I write the same file over and over (a builroot boot img for example), at a
+    # certain point the sdcard will just stop writing new data
+    # So I write random data to the sdcard before writing the file passed in argument
+    ddddd(){
+        if [[ -e $2 ]] && [[ -b $1 ]]; then
+            sudo dd if=/dev/urandom of=$1 count=16384
+            sync
+            sudo dd if=$2 of=$1 bs=4K
+            sync
+        fi
+    }
 
 
-# Recursively delete empty directories
-rrmdir(){
-	if [[ ! -d $1 ]]; then
-		return
-	fi
+    # Go to the parent dir
+    # If there is an arg, go to $1 levels above the current directory
+    ..(){
+        typeset -i count=1
 
-	for file in $1/*; do
-		if [[ ! -d $file ]]; then
-			echo "Directory not empty: $file"
-			return
-		else
-			rrmdir $file
-		fi
-	done
-	echo "Deleting $1"
-	rmdir $1
-}
+        if [[ $1 -gt 1 ]]; then
+            count=$1
+        fi
+
+        for ((i = 0; i < $count; ++i)); do
+            cd ..
+        done
+
+    }
 
 
-# Open a graphical app with sudo
-wsudo(){
-	xhost +SI:localuser:root
-	sudo "$@"
-	xhost -SI:localuser:root
-	xhost
-}
+    # Recursively delete empty directories
+    rrmdir(){
+        if [[ ! -d $1 ]]; then
+            return
+        fi
+
+        for file in $1/*; do
+            if [[ ! -d $file ]]; then
+                echo "Directory not empty: $file"
+                return
+            else
+                rrmdir $file
+            fi
+        done
+        echo "Deleting $1"
+        rmdir $1
+    }
+
+
+    # Open a graphical app with sudo
+    wsudo(){
+        xhost +SI:localuser:root
+        sudo "$@"
+        xhost -SI:localuser:root
+        xhost
+    }
+fi # load_full_zsh
 
 
 ################################################################################
-#Hooks
+# Hooks
 ################################################################################
 
 # Function called before a command is executed
 preexec(){
-	# Set the running command as the title
-	set_title $(echo $1)
-	
-	# _preexec stores the time before a command is executed
-	_preexec=$(date '+%s%N' | cut -b1-13)
+    # Set the running command as the title
+    set_title $(echo $1)
+
+    # _preexec stores the time before a command is executed
+    _preexec=$(date '+%s%N' | cut -b1-13)
 }
 
 precmd(){ 
-	# _postexec stores the time after a command is executed
-	# The two are used to calculate the duration of a command and print it in the RPROMPT
-	_postexec=$(date '+%s%N' | cut -b1-13)
-	_exec_time="$(( $_postexec - $_preexec ))"
-	rprompt_time=$(format_duration $_exec_time)
-	
-	# When the last command is finished, set the directory name as title
-	set_title $(basename $(pwd))
-	
-	RPROMPT="%{$fg_bold[$prompt_user_color]%}%~ %{$fg[magenta]%}- %{$fg_bold[cyan]%}%n%{$fg_bold[magenta]%}:%{$fg[cyan]%}%m%{$fg[magenta]%}:%{$fg[blue]%}%l %{$fg[magenta]%}- %{$fg_bold[white]%}%T %{$fg[magenta]%}- %{$fg_bold[yellow]%}[$rprompt_time]%{$reset_color%}"
+    # _postexec stores the time after a command is executed
+    # The two are used to calculate the duration of a command and print it in the RPROMPT
+    _postexec=$(date '+%s%N' | cut -b1-13)
+    _exec_time="$(( $_postexec - $_preexec ))"
+    rprompt_time=$(format_duration $_exec_time)
+
+    # When the last command is finished, set the directory name as title
+    set_title $(basename $(pwd))
+
+    RPROMPT="%{$fg_bold[$prompt_user_color]%}%~ %{$fg[magenta]%}- %{$fg_bold[cyan]%}%n%{$fg_bold[magenta]%}:%{$fg[cyan]%}%m%{$fg[magenta]%}:%{$fg[blue]%}%l %{$fg[magenta]%}- %{$fg_bold[white]%}%T %{$fg[magenta]%}- %{$fg_bold[yellow]%}[$rprompt_time]%{$reset_color%}"
 }
 
 
 ################################################################################
-#Keybindings
+# Keybindings
 ################################################################################
 
-#Setup keys which might not be default
+# Setup keys which might not be default
 # [[ -n "${key[Up]}"       ]]  && bindkey  "${key[Up]}"       up-line-or-history
 # [[ -n "${key[Down]}"     ]]  && bindkey  "${key[Down]}"     down-line-or-history
 # [[ -n "${key[Left]}"     ]]  && bindkey  "${key[Left]}"     backward-char
@@ -789,63 +790,63 @@ precmd(){
 
 # NOTE: You can find the keys to use with the command "showkey -a"
 
-#Search the history from the line up to the cursor position when using Up or Down key
+# Search the history from the line up to the cursor position when using Up or Down key
 autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
 zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
 
-bindkey "^[[A" up-line-or-beginning-search 		# Up
+bindkey "^[[A" up-line-or-beginning-search          # Up
 bindkey '^[OA' up-line-or-beginning-search
-bindkey "^[[B" down-line-or-beginning-search 	# Down
+bindkey "^[[B" down-line-or-beginning-search        # Down
 bindkey '^[OB' down-line-or-beginning-search
-bindkey "^[[C" forward-char 					# Right
-bindkey "^[[D" backward-char 					# Left
+bindkey "^[[C" forward-char                         # Right
+bindkey "^[[D" backward-char                        # Left
 
-bindkey "^[[5~" beginning-of-buffer-or-history 	# Page Up
-bindkey "^[[6~" end-of-buffer-or-history 		# Page Down
+bindkey "^[[5~" beginning-of-buffer-or-history      # Page Up
+bindkey "^[[6~" end-of-buffer-or-history            # Page Down
 
-bindkey "^[[H" beginning-of-line 				# Home
-bindkey "^[[F" end-of-line 						# End
+bindkey "^[[H" beginning-of-line                    # Home
+bindkey "^[[F" end-of-line                          # End
 
-bindkey "^[[2~" overwrite-mode 					# Insert
-bindkey "^[[3~" delete-char 					# Delete
+bindkey "^[[2~" overwrite-mode                      # Insert
+bindkey "^[[3~" delete-char                         # Delete
 
 
-#Move the cursor to the start of the previous word
-bindkey "^[[1;5D" vi-backward-blank-word 		# Ctrl + Left
-#Move the cursor to the start of the next word
-bindkey "^[[1;5C" vi-forward-blank-word 		# Ctrl + Right
+# Move the cursor to the start of the previous word
+bindkey "^[[1;5D" vi-backward-blank-word            # Ctrl + Left
+# Move the cursor to the start of the next word
+bindkey "^[[1;5C" vi-forward-blank-word             # Ctrl + Right
 
-#Deletes the word before the cursor
-bindkey	"^[[1;6D" backward-delete-word 			# Ctrl + Shift + Left 
-#Deletes the word after the cursor
-bindkey	"^[[1;6C" delete-word 					# Ctrl + Shift + Right
+# Deletes the word before the cursor
+bindkey    "^[[1;6D" backward-delete-word           # Ctrl + Shift + Left 
+# Deletes the word after the cursor
+bindkey    "^[[1;6C" delete-word                    # Ctrl + Shift + Right
 
-#Swap the case of the char under the cursor
-bindkey "^[[1;2A" vi-swap-case 					# Shift + Up
-#Swap the case of a selection
-#Press once then a vi movement to swap selected text or press twice and swap the line
-bindkey "^[[1;2B" vi-oper-swap-case 			# Shift + Down
-#Move the word under the cursor to the left
-bindkey "^[[1;2D" transpose-words 				# Shift + Left
-#Haven't found a way to move a word to the right, so it's useful for vi-oper-swap-case
-bindkey "^[[1;2C" end-of-line 					# Shift + Right
+# Swap the case of the char under the cursor
+bindkey "^[[1;2A" vi-swap-case                      # Shift + Up
+# Swap the case of a selection
+# Press once then a vi movement to swap selected text or press twice and swap the line
+bindkey "^[[1;2B" vi-oper-swap-case                 # Shift + Down
+# Move the word under the cursor to the left
+bindkey "^[[1;2D" transpose-words                   # Shift + Left
+# Haven't found a way to move a word to the right, so it's useful for vi-oper-swap-case
+bindkey "^[[1;2C" end-of-line                       # Shift + Right
 
-#Undo the last action
-bindkey "^[[1;2P" undo 							# Shift + F1
-#Redo the last action undone
-bindkey "^[[1;2Q" redo 							# Shift + F2
-#You can also launch a command when using a shortcut
-bindkey -s "^[[1;2R" "watch -n 1 'dmesg | tail -n 16'\n" 	# Shift + F3
-bindkey -s "^[[15;2~" "yaourt -Syu\n" 						# Shift + F5
-bindkey -s "^[[17;2~" "yaourt -Syua --noconfirm\n" 			# Shift + F6
+# Undo the last action
+bindkey "^[[1;2P" undo                              # Shift + F1
+# Redo the last action undone
+bindkey "^[[1;2Q" redo                              # Shift + F2
+# You can also launch a command when using a shortcut
+bindkey -s "^[[1;2R" "watch -n 1 'dmesg | tail -n 16'\n"    # Shift + F3
+bindkey -s "^[[15;2~" "yaourt -Syu\n"                       # Shift + F5
+bindkey -s "^[[17;2~" "yaourt -Syua --noconfirm\n"          # Shift + F6
 
 
 ################################################################################
-#Misc
+# Misc
 ################################################################################
 
-#Set the tab size to 4
+# Set the tab size to 4
 tabs 4
 
 

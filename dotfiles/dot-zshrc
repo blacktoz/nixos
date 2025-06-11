@@ -1,9 +1,11 @@
 
 ################################################################################
+# keiwop="Maxime Martin"
+# license=(GPLv3+)
 ################################################################################
-#keiwop="Maxime Martin"
-#license=(GPLv3+)
 
+os_id=$(grep -i '^ID=' /etc/os-release | cut -d'=' -f2 | tr -d '"')
+load_full_zsh=false
 
 
 ################################################################################
@@ -17,7 +19,6 @@ autoload -U colors && colors
 prompt_user_color=green
 PROMPT="%{$fg_bold[$prompt_user_color]%}%#%{$fg_bold[cyan]%}%1~%{$fg_bold[magenta]%}>%{$reset_color%}%"
 RPROMPT="%{$fg_bold[$prompt_user_color]%}%~ %{$fg[magenta]%}- %{$fg_bold[cyan]%}%n%{$fg_bold[magenta]%}:%{$fg[cyan]%}%m%{$fg[magenta]%}:%{$fg[blue]%}%l %{$fg[magenta]%}- %{$fg_bold[white]%}%T %{$fg[magenta]%}- %{$fg_bold[yellow]%}[Ø]%{$reset_color%}"
-
 
 
 ################################################################################
@@ -60,7 +61,6 @@ setopt RC_EXPAND_PARAM 	#Doesn't seem to work
 setopt ZLE
 #Automaticaly add the dirs visited with "cd" to the directory stack
 setopt AUTOPUSHD PUSHDMINUS PUSHDSILENT PUSHD_IGNORE_DUPS
-
 
 
 ################################################################################
@@ -144,9 +144,6 @@ export WORDCHARS="*?_-.[]~=/&;!#$%^(){}<>"
 typeset -ig _preexec=$(date '+%s%N' | cut -b1-13)
 typeset -ig _postexec=$(date '+%s%N' | cut -b1-13)
 
-# Make swing applications a bit less ugly. Define it in /etc/environment for a global effect
-export _JAVA_OPTIONS="-Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel -Dswing.crossplatformlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel"
-
 
 ################################################################################
 #Path
@@ -155,14 +152,9 @@ export _JAVA_OPTIONS="-Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndF
 #All the directories in /_ are accessible with cd from anywhere
 cdpath=(/_ /data)
 
-path=($path /sbin /usr/sbin /_/bin /_/src/scripts /_/src/python /_/src/kbd/bin /home/keiwop/.local/bin)
-path=($path /opt/intel/bin /opt/altera/quartus/bin /opt/esp-open-sdk/xtensa-lx106-elf/bin /opt/easyeda)
-# path=($path /usr/share/java/javacc-5.0/bin /_/opt/activemq/bin/linux-x86-64)
-
-ld_library_path=($ld_library_path /_/lib /_/src/kbd/bin/lib /opt/intel/lib /_/opt/boost_65/lib /opt/esp-open-sdk/xtensa-lx106-elf/lib)
-# LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/craftware/lib
-# CLASSPATH=($CLASSPATH /usr/share/java/junit.jar /usr/share/java/javacc-5.0/bin/lib/javacc.jar)
-# CLASSPATH=$CLASSPATH:/_/opt/wildfly-10.1.0.Final/jboss-modules.jar:/_/opt/ViSiDiA/lib/visidia_api.jar
+path=($path /sbin /usr/sbin /_/bin /_/src/scripts /_/src/python /_/dev/kbd/bin /_/opt/riscv32ec/bin)
+path=($path /opt/intel/bin /opt/altera/quartus/bin /opt/esp-open-sdk/xtensa-lx106-elf/bin)
+ld_library_path=($ld_library_path /_/lib /_/src/kbd/bin/lib /opt/intel/lib /opt/esp-open-sdk/xtensa-lx106-elf/lib /_/opt/riscv32ec/lib)
 
 #Remove the duplicates from the path
 typeset -U path
@@ -178,15 +170,6 @@ alias l="ll -tr"
 alias lll="ll -CR"
 #ll showing the hidden files
 alias la="ll -a"
-#Show the files (and dirs) in all the subdirectories modified in the last 5mn
-alias lm="ll **/*(.mm-5)"
-alias lama="ll **/*(D.mm-5)" 	#Same but including all the hidden files
-#Show the last 16 files modified in all the subdirectories
-alias lo="ll **/*(.om[1,16])"
-alias llo="ll **/*(D.om[1,16])" 	#Same but including all the hidden files
-#Show the files bigger than 42MB in all the subdirectories
-alias lk="ll **/*(.Lm+42)"
-alias llk="ll **/*(D.Lm+42)" 	#Same but including all the hidden files
 #Show the last 20 entries of the journal log
 alias lj="journalctl -b --user | tail -20"
 #Show the ports used on the machine
@@ -201,6 +184,12 @@ alias -g .....="../../../.."
 alias mkd="mkdir_cd"
 alias mountt="mount | column -t"
 
+#Forgot to add sudo at the beginning of your command? Ask nicely this time
+alias plz='eval "sudo $(fc -ln -1)"'
+
+#Print the top10 of the most used commands
+alias top10="cat ~/.zsh_history | cut -d ' ' -f 1 | sort | uniq -c | sort -rn | head -n 10"
+
 #Rsync over the network
 alias rs="rsync -avP --info=progress2  keiwop@nibbler:/_/tmp/\* ."
 #Copy a filesystem
@@ -210,27 +199,11 @@ alias rs_local="rsync -xaHAWXS --no-compress --info=progress2 --numeric-ids"
 #See the functions tar_compress and tar_decompress
 alias tarc="tar_compress"
 alias tarx="tar_decompress"
-alias tarxfat="sudo tar --strip-components=4 --no-same-owner -xzpvf"
 
 alias sd_bkp="dd if=/dev/sdc bs=4M | pv | gzip > sd_bkp.img.gz"
 alias sd_restore="gzip -dc sd_bkp.img.gz | pv | sudo dd bs=4M of=/dev/null"
 
-#Make the boot.img for an Android device
-alias ramdisko="find . | cpio -o -H newc | gzip > ../initramfs_.cpio.gz"
-alias ramdiski="gunzip -c ../initramfs.cpio.gz | cpio -i"
-alias mkimg="mkbootimg --kernel zImage --ramdisk initramfs_.cpio.gz --base 0x40000000 --cmdline 'console=ttyS0,115200 rw init=/init loglevel=4 vmalloc=384M ion_reserve=128M' -o new_block.img"
-
-#Replaced by functions
-#alias chmod_dir="find /path/to/dir -type d -print0 | xargs -0 chmod 755"
-#alias chmod_files="find /path/to/dir -type f -print0 | xargs -0 chmod 644"
-
-#There is a function now
-#alias create_efistub="sudo efibootmgr -d /dev/sda -p 1 -c -L 'arch_efi' -l /arch/vmlinuz-linux -u 'root=/dev/sda2 rw rootflags=noatime,discard elevator=noop initrd=/arch/initramfs-linux.img'"
-
-#Forgot to add sudo at the beginning of your command? Ask nicely this time
-alias plz='eval "sudo $(fc -ln -1)"'
-
-#Watch'em all!
+# Watch'em all!
 alias watch_disks="watch -n 1 'sudo hdparm -C /dev/sd?'"
 alias watch_disks_log="watch -n 1 'tail -n 16 /var/log/disks_states.log'"
 alias watch_system_log="watch -n 1 'tail -n 16 /var/log/arch_desktop.log'"
@@ -239,13 +212,113 @@ alias watch_sensors="watch -n 1 'sudo sensors'"
 alias watch_dmesg="watch -n 1 'dmesg | tail -n 16'"
 alias watch_temp="watch -n 1 cat /sys/class/thermal/thermal_zone*/temp"
 
+#¡Hola!
+alias valgringo="valgrind -v --leak-check=full --show-reachable=yes"
+
+#Network stuff
+alias pingg="ping 8.8.8.8"
+alias redirect_port="sudo iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 5000"
+alias listen_port="nc -vl 4242"
+
+# Remove a host from the known_host file
+alias ssh_purge="ssh-keygen -R hostname"
+
+#Some git aliases
+alias gs="git status"
+alias gd="git diff"
+alias git_ssh="git remote set-url origin git@github.com:$(whoami)/project.git"
+alias git_bad_info="git commit --amend --reset-author"
+alias git_didnt_pull="git reset HEAD~1 --soft"
+alias git_ignore_file="git update-index --skip-worktree"
+
+#Touch recursively the files of the current dir
+alias touch_all="find . -exec touch {} \;"
+
+# Check for differences between the hardware clock and the one defined using ntp
+alias check_timesync="date +'%Y-%m-%d %H:%M:%S.%N' && hwclock"
+
+# Free the pagecache, inodes and dentries from the memory before we are OOM
+alias drop_caches="echo '3' | sudo tee /proc/sys/vm/drop_caches"
+
+# Reset the terminal after a curses crash
+alias reset_term="stty sane^J"
+
+# Find a substring in a file structure
+alias find_str="grep -rnw './' -e '.*placeholder.*'"
+
+# It lists services
+alias list_services="systemctl list-units --type=service"
+
+# Remove the spaces from all filenames in current dir
+alias space_to_dot='for file in *; do mv "$file" "${file// /.}"; done'
+
+# Logout from current DE
+alias logout="loginctl terminate-user $USER"
+#Reboot on another efi loader
+alias boot_windows="sudo efibootmgr -n 0; sudo reboot"
+#Kill all the processes of the user
+alias kill_myself="pkill -u $(whoami)"
+#Turn system off
+alias off="sudo systemctl poweroff"
+
+# Disable ext4 journal for sdcards (Can help with shitty sdcards)
+alias ext4_no_journal="sudo mke2fs -t ext4 -O \^has_journal /dev/sdz1"
+
+# Get current weather for wxtoimg
+alias update_weather="wget --directory-prefix=/tmp https://celestrak.org/NORAD/elements/weather.txt; cp -v /tmp/weather.txt ~/.wxtoimg/weather.txt"
+
+if [[ "$os_id" == "arch" ]]; then
+	# Delete the lock put in place by pacman
+	alias pac_unlock="sudo rm -vf /var/lib/pacman/db.lck"
+	# Find the app owning a file
+	alias pac_find_owner="sudo pacman -Qo"
+	# Pacman removed the --force option
+	alias pac_force_install="yay -S --overwrite='*'"
+	alias pac_list="LC_ALL=C pacman -Qi | awk '/^Name/{name=\$3} /^Installed Size/{print \$4\$5, name}' | sort -h"
+	alias pac_unknown_trust="sudo pacman -S archlinux-keyring"
+	alias pac_update_mirrors="sudo reflector --country France --country Germany --age 2 --sort rate --verbose --save /etc/pacman.d/mirrorlist.ranked"
+	alias pac_heavy_clean="sudo pacman -Rns $(pacman -Qtdq)"
+fi
+
+#Replaced by functions
+#alias chmod_dir="find /path/to/dir -type d -print0 | xargs -0 chmod 755"
+#alias chmod_files="find /path/to/dir -type f -print0 | xargs -0 chmod 644"
+
+#There is a function now
+#alias create_efistub="sudo efibootmgr -d /dev/sda -p 1 -c -L 'arch_efi' -l /arch/vmlinuz-linux -u 'root=/dev/sda2 rw rootflags=noatime,discard elevator=noop initrd=/arch/initramfs-linux.img'"
+
+
+################################################################################
+# Legacy aliases
+################################################################################
+# I'm not using these aliases anymore or not often
+# They are kept here to be removed easily when working on slow systems
+
+# FIXME: lm lo lk are broken
+#Show the files (and dirs) in all the subdirectories modified in the last 5mn
+alias lm="ll **/*(.mm-5)"
+alias lama="ll **/*(D.mm-5)" 	#Same but including all the hidden files
+#Show the last 16 files modified in all the subdirectories
+alias lo="ll **/*(.om[1,16])"
+alias llo="ll **/*(D.om[1,16])" 	#Same but including all the hidden files
+#Show the files bigger than 42MB in all the subdirectories
+alias lk="ll **/*(.Lm+42)"
+alias llk="ll **/*(D.Lm+42)" 	#Same but including all the hidden files
+
+alias tarxfat="sudo tar --strip-components=4 --no-same-owner -xzpvf"
+
+
+#Make the boot.img for an Android device
+alias ramdisko="find . | cpio -o -H newc | gzip > ../initramfs_.cpio.gz"
+alias ramdiski="gunzip -c ../initramfs.cpio.gz | cpio -i"
+alias mkimg="mkbootimg --kernel zImage --ramdisk initramfs_.cpio.gz --base 0x40000000 --cmdline 'console=ttyS0,115200 rw init=/init loglevel=4 vmalloc=384M ion_reserve=128M' -o new_block.img"
+
+
 #Configure a serial bluetooth adapter
 alias bt_set_name="sudo echo 'AT+NAMEkeiwop' >> /dev/ttyUSB0"
 alias bt_set_pin="sudo echo 'AT+PIN0000' >> /dev/ttyUSB0"
 alias bt_set_baud="sudo echo 'AT+BAUD4' >> /dev/ttyUSB0"
 
-#Print the top10 of the most used commands
-alias top10="cat ~/.zsh_history | cut -d ' ' -f 1 | sort | uniq -c | sort -rn | head -n 10"
 
 #Program a clone of arduino pro micro (A Makefile is now available in your local newspaper)
 alias prog_32u4="avrdude -v -v -v -v -D -P/dev/ttyACM0 -cavr109 -b57600 -patmega32u4 -Uflash:w:firmware:i"
@@ -256,41 +329,23 @@ alias video_from_jpg="ffmpeg -f image2 -start_number 1982 -r 7 -i DSC0%d.JPG -y 
 #Just in case autotfs doesn't work
 alias mount_arch_desktop="sudo mount -t nfs 192.168.1.42:/ /_/nfs/hosts/arch_desktop"
 
-#¡Hola!
-alias valgringo="valgrind -v --leak-check=full --show-reachable=yes"
-
 #Network stuff
-alias pingg="ping 8.8.8.8"
 alias ssh_router="ssh -oKexAlgorithms=+diffie-hellman-group1-sha1 ${router_user}@${router_addr}"
 alias fac_mtu="sudo ip link set wlp3s0 mtu 1000; sudo ip link set tap0 mtu 1000"
-alias seedbox_get_file="wget --user=${seedbox_user} --password=${seedbox_passwd} --no-check-certificate -r --reject='index.html*' -nH -np --cut-dirs=2"
-alias redirect_port="sudo iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 5000"
+alias get_seedbox_file="wget --user=${seedbox_user} --password=${seedbox_passwd} --no-check-certificate -r --reject='index.html*' -nH -np --cut-dirs=2"
 alias vbox_fix_dns="VBoxManage modifyvm 'Ubuntu 16.04' --natdnshostresolver1 on"
-alias listen_port="nc -vl 4242"
 
 #Some git aliases
 alias pushm="git push origin HEAD:master"
 alias pullm="git pull origin master"
-alias git_ssh="git remote set-url origin git@github.com:$(whoami)/project.git"
-alias git_bad_info="git commit --amend --reset-author"
-alias git_didnt_pull="git reset HEAD~1 --soft"
 
 #Replace the js used by the the current instance of Gnome
 alias use_custom_gjs="GNOME_SHELL_JS=/_/dev/gnome/gnome_shell gnome-shell --replace"
 
-#Touch recursively the files of the current dir
-alias touch_all="find . -exec touch {} \;"
-
-#Reboot on another efi loader
-alias boot_windows="sudo efibootmgr -n 0; sudo reboot"
 #Logout from Gnome
 alias logout_gnome="DISPLAY=:0 gnome-session-quit --force-logout"
 #Logout from KDE
 alias logout_kde="DISPLAY=:0 qdbus org.kde.ksmserver /KSMServer logout 0 0 0"
-#Kill all the processes of the user
-alias kill_myself="pkill -u $(whoami)"
-#Turn system off
-alias off="sudo systemctl poweroff"
 
 #D-BUS stuff
 alias dbus_services="dbus-send --session --dest=org.freedesktop.DBus --type=method_call --print-reply /org/freedesktop/DBus org.freedesktop.DBus.ListNames"
@@ -298,25 +353,12 @@ alias dbus_services_system="dbus-send --system --dest=org.freedesktop.DBus --typ
 
 # Fixup old code using progmem for new version of avr-gcc
 alias fix_progmem="sed -i 's/^PROGMEM/const PROGMEM/g' *"
-
-# Check for differences between the hardware clock and the one defined using ntp
-alias check_timesync="date +'%Y-%m-%d %H:%M:%S.%N' && hwclock"
-
-# Free the pagecache, inodes and dentries from the memory
-alias drop_caches="echo '3' | sudo tee /proc/sys/vm/drop_caches"
-
-# Reset the terminal after a curses crash
-alias reset_term="stty sane^J"
+# Dump the program of an AVR into a Intel hex file
+alias dump_avr="avrdude -c usbasp -p attiny85 -U flash:r:dump.hex:i"
 
 # Change the state the discrete GPU
 alias gpu_on="sudo tee /proc/acpi/bbswitch <<< ON"
 alias gpu_off="sudo tee /proc/acpi/bbswitch <<< OFF"
-
-# Remove a host from the known_host file
-alias ssh_purge="ssh-keygen -R hostname"
-
-# Disable ext4 journal for sdcards (Can help with shitty sdcards)
-alias ext4_no_journal="sudo mke2fs -t ext4 -O \^has_journal /dev/sdz1"
 
 # Fix for Xbox One S controller not being pairable via bluetooth
 alias xbox_disable_ertm="echo 1 | sudo tee /sys/module/bluetooth/parameters/disable_ertm"
@@ -325,16 +367,11 @@ alias xbox_disable_ertm="echo 1 | sudo tee /sys/module/bluetooth/parameters/disa
 alias mount_wallet="cryfs /_/usr/crypto/cryfs/wallet /_/usr/crypto/cryfs/wallet_mnt"
 alias umount_wallet="fusermount -u /_/usr/crypto/cryfs/wallet_mnt"
 
-# Set up Wireshark for USB monitoring
-alias wireshark_usb="sudo modprobe usbmon; sudo setfacl -m u:keiwop:r /dev/usbmon*; wireshark"
-
-# Delete the lock put in place by pacman
-alias pac_unlock="sudo rm -vf /var/lib/pacman/db.lck"
-# Find the app owning a file
-alias pac_find_owner="sudo pacman -Qo"
-
 # Backup the database from the Authenticator Android app
 alias backup_authenticator="adb pull /data/data/com.google.android.apps.authenticator2/databases/databases /_/usr/authenticator"
+
+# Set up Wireshark for USB monitoring
+alias wireshark_usb="sudo modprobe usbmon; sudo setfacl -m u:keiwop:r /dev/usbmon*; wireshark"
 
 # Print a list of hex number for 0 to 0xff
 alias print_hex="python -c \"for i in range(0, 256): print(f'{i:#02x},', end='')\""
@@ -342,32 +379,10 @@ alias print_hex="python -c \"for i in range(0, 256): print(f'{i:#02x},', end='')
 alias adb_wifi='adb tcpip 5555; android_addr=$(adb shell ip -f inet addr show wlan0); adb connect $android_addr:5555'
 
 alias link="ld -o hello -lc -dynamic-linker /lib/ld-linux.so.2 hello.o -e main"
-# Dump the program of an AVR into a Intel hex file
-alias dump_avr="avrdude -c usbasp -p attiny85 -U flash:r:dump.hex:i"
-
-alias send_payload="fusee-launcher /_/dev/switch/payloads/hekate_ctcaer_4.10.1.bin"
-alias send_payload_hekate="fusee-launcher /_/dev/switch/payloads/hekate_ctcaer_4.10.1.bin"
-alias send_payload_ctcaer="fusee-launcher /_/dev/switch/payloads/hekate_ctcaer_5.0.1.pre6.bin"
-
-alias force_install="yay -S --overwrite='*'"
-
-alias find_str="grep -rnw './' -e '.*placeholder.*'"
-
-alias update_mirrors="sudo reflector --country France --country Germany --age 2 --sort rate --verbose --save /etc/pacman.d/mirrorlist.ranked"
-
-alias pac_list="LC_ALL=C pacman -Qi | awk '/^Name/{name=\$3} /^Installed Size/{print \$4\$5, name}' | sort -h"
-alias pac_unknown_trust="sudo pacman -S archlinux-keyring"
-
-alias list_services="systemctl list-units --type=service"
-
-alias update_weather="wget --directory-prefix=/tmp https://celestrak.org/NORAD/elements/weather.txt; cp -v /tmp/weather.txt ~/.wxtoimg/weather.txt"
 
 alias msi_fan_off="sudo isw -s 0x72 0"
 alias msi_battery_100="sudo isw -s 0xef 228"
 alias msi_battery_60="sudo isw -s 0xef 188"
-
-alias space_to_dot='for file in *; do mv "$file" "${file// /.}"; done'
-alias pac_heavy_clean="sudo pacman -Rns $(pacman -Qtdq)"
 
 
 ################################################################################
@@ -444,28 +459,12 @@ mkdir_cd(){
 }
 
 
-#Go to the parent dir
-#If there is an arg, go to $1 levels above the current directory
-..(){
-	typeset -i count=1
-	
-	if [[ $1 -gt 1 ]]; then
-		count=$1
-	fi
-	
-	for ((i = 0; i < $count; ++i)); do
-		cd ..
-	done
-	
-}
-
-
 #Check if the network is functionning
 #Test the LAN by pinging the router, then the WAN by pinging a DNS server of Google
 #Lastly, ping www.google.com to see if I can get through the DNS
 check_network(){
 	echo -n "LAN: "
-	print_ping_state "192.168.1.254"
+	print_ping_state "192.168.1.1"
 	
 	echo -n "WAN: "
 	print_ping_state "8.8.8.8"
@@ -473,6 +472,7 @@ check_network(){
 	echo -n "DNS: "
 	print_ping_state "www.google.com"
 }
+
 
 #Send a single ping and wait 2 seconds for the response
 #If it came back, good for you
@@ -484,51 +484,6 @@ print_ping_state(){
 	fi
 }
 
-
-#To redo when gnome will be capable to switch the night mode at runtime...
-set_dark_theme(){
-	gsettings set org.gnome.shell.extensions.user-theme name Flat-Plat
-	gsettings set org.gnome.desktop.interface gtk-theme Arc-Dark
-	gsettings set org.gnome.desktop.interface icon-theme Numix-Circle
-	gsettings set org.gnome.gedit.preferences.editor scheme 'solarized-dark'
-}
-
-
-set_light_theme(){
-	gsettings set org.gnome.shell.extensions.user-theme name Flat-Plat
-	gsettings set org.gnome.desktop.interface gtk-theme Flat-Plat
-	gsettings set org.gnome.desktop.interface icon-theme Numix-Circle
-	gsettings set org.gnome.gedit.preferences.editor scheme 'solarized-light'
-}
-
-
-#Emulate a bluetooth ps3 controller as a xbox 360 controller
-xboxdrv_ps3(){
-	controllers=($(bluetoothctl <<< "exit" | grep "NEW" | grep "PLAYSTATION(R)3" | cut -d " " -f 4))
-	
-	for controller in $controllers; do
-		echo "Emulating controller $controller as xbox 360 controller"
-		for event_dev in /dev/input/event*; do
-			sudo udevadm info -a --name=$event_dev | grep -i "$controller" > /dev/null
-			if [[ $? -eq 0 ]]; then
-				echo "Found the controller connected via bluetooth: $event_dev"
-				sudo xboxdrv --evdev $event_dev --mimic-xpad
-			fi
-		done
-	done
-
-}
-
-
-#Emulate a wiiu pro controller as a xbox 360 controller
-xboxdrv_wiiupro(){
-	sudo xboxdrv -c /_/fun/games/wiiupro.xboxdrv --type xbox360-wireless --led 2 --mimic-xpad-wireless
-}
-
-
-xboxdrv_one_s_wireless(){
-	sudo xboxdrv --evdev /dev/input/event18 --config /data/games/controller/xbox_one_s_wireless.xboxdrv --type xbox360-wireless --mimic-xpad-wireless --wid 0 --led 2
-}
 
 #Put the machine in suspend mode at the end of the timer
 #The timer can be the first argument in seconds
@@ -551,108 +506,6 @@ machine_suspend(){
 }
 
 
-#Put the machine in hibernation mode
-#I don't know why I coded this in the first place, I never use it
-#I don't even know why I'm commenting it instead of deleting it
-machine_hibernate(){
-	echo '\n\tWinter is coming...'
-	sleep 1
-	echo '\t...Going into hibernation mode'
-	sleep 2
-	echo '\nIt was a joke, the hard drive has crashed.'
-	echo 'Now your computer is going to explode in'
-	sleep 3
-	for ((i = 3; i > 0; --i)); do
-		echo "\t$i"
-		sleep 1
-	done
-	systemctl hibernate
-}
-
-
-#Turn off the machine and then print a message. Brilliant!
-#(Actually, the machine takes a bit of time to react to the command, so it works)
-machine_poweroff(){
-	systemctl poweroff
-	sleep 1
-	echo '\n\tPowering off in: '
-	sleep 1
-	for ((i = 3; i > 0; --i)); do
-		echo "\t$i"
-		sleep 1
-	done
-}
-
-
-#For all the variable names in the array PROXY_ENV, assign it the proxy given in parameter
-#This function is used in proxy_on and proxy_off
-assign_proxy(){
-	PROXY_ENV=(http_proxy ftp_proxy https_proxy all_proxy HTTP_PROXY HTTPS_PROXY FTP_PROXY ALL_PROXY)
-	for envar in $PROXY_ENV; do
-		echo $envar=$1
-		export $envar=$1
-	done
-	PROXY_ENV=(no_proxy NO_PROXY)
-	for envar in $PROXY_ENV; do
-		echo $envar=$2
-		export $envar=$2
-	done
-}
-
-
-#Turn the proxy off and go back to normal
-proxy_off(){
-	gsettings set org.gnome.system.proxy mode none
-	assign_proxy ""
-}
-
-
-#If I type "proxy_on fac", I can browse dank memes at high speed during class. Yay!
-#Seriously, this function try to set the proxy by any means(also in gnome via gsettings)
-proxy_on(){
-#	user=keiwop
-#	read -p "Password: " -s pass &&  echo -e " "
-#	proxy_value="http://$user:$pass@ProxyServerAddress:Port"
-
-	host="192.168.43.1"
-	port="4242"
-	ignore_hosts="['localhost', '127.0.0.0/8', '::1']"
-
-	if [[ -n $1 ]]; then
-		if [[ $1 = "fac" ]]; then
-			host="http://proxy-web.univ-fcomte.fr"
-			port="3128"
-		elif [[ $1 = "android" ]]; then
-			host="192.168.43.1"
-			port="4242"
-		elif [[ $1 = "wan_android" ]]; then
-			host="12.34.56.78"
-			port="4242"
-		else
-			host=$1
-			port=$2
-		fi
-	fi
-	
-#	Global gnome proxy config
-	gsettings set org.gnome.system.proxy mode manual
-	gsettings set org.gnome.system.proxy ignore-hosts $ignore_hosts
-	gsettings set org.gnome.system.proxy.ftp host $host
-	gsettings set org.gnome.system.proxy.ftp port $port
-	gsettings set org.gnome.system.proxy.http host $host
-	gsettings set org.gnome.system.proxy.http port $port
-	gsettings set org.gnome.system.proxy.https host $host
-	gsettings set org.gnome.system.proxy.https port $port
-	gsettings set org.gnome.system.proxy.socks host $host
-	gsettings set org.gnome.system.proxy.socks port $port
-	
-#	Shell proxy config
-	proxy_value="${host}:${port}"
-	no_proxy_value="localhost,127.0.0.1,LocalAddress,LocalDomain.com"
-	assign_proxy $proxy_value $no_proxy_value
-}
-
-
 # Print the hex value from a int passed as parameter
 hexof(){
     if [[ -n $1 ]]; then
@@ -664,173 +517,6 @@ hexof(){
 			printf "0x%x\n" $1
 		fi
     fi
-}
-
-#The aircrack serie of functions begins
-#I'll put them all in a script somewhere, someday, somehow
-set_monitor_mode(){
-	sudo systemctl stop NetworkManager.service
-	sudo systemctl stop wpa_supplicant.service 
-	sudo ip link set wlp2s0 down
-	sudo iwconfig wlp2s0 mode Monitor
-	sudo airmon-ng start wlp2s0 9
-}
-
-
-unset_monitor_mode(){
-	sudo ip link set wlp2s0 up
-	sudo iwconfig wlp2s0 mode Managed
-	sudo systemctl restart wpa_supplicant.service 
-	sudo systemctl restart NetworkManager.service
-}
-
-
-alias scan_networks="sudo airodump-ng wlp2s0"
-#alias wpa_handshake="sudo airodump-ng wlp3s0 -c 11 -w psk --bssid 02:1A:11:FB:0C:D6"
-#alias wpa_aireplay="sudo aireplay-ng wlp3s0 -0 42 -a 02:1A:11:FB:0C:D6 -c DC:85:DE:07:BB:48"
-#alias wpa_aircrack="sudo aircrack-ng -w dict -b 02:1A:11:FB:0C:D6 psk*.cap"
-
-wpa_scan_handshake(){
-	if [[ $1 -ge 1 ]]; then
-		export wpa_channel=$1
-	fi
-	
-	if [[ -n $2 ]]; then
-		export wpa_ssid=$2
-	fi
-	
-	sudo airodump-ng wlp2s0 -c $wpa_channel -w psk --bssid $wpa_ssid
-}
-
-wpa_disconnect_client(){
-	if [[ -n $1 ]]; then
-		export wpa_client_ssid=$1
-	fi
-	
-	sudo aireplay-ng wlp2s0 -0 42 -a $wpa_ssid -c $wpa_client_ssid
-	cat >> wpa_log <<-EOF
-	ssid: $wpa_ssid
-	client: $wpa_client_ssid
-	EOF
-}
-
-wpa_crack_passwd(){
-	if [[ -n $1 ]]; then
-		export wpa_dict_list=$1
-	fi
-	
-	sudo aircrack-ng -w $wpa_dict_list -b $wpa_ssid psk*.cap
-}
-
-
-#Generate a png for a graph described in a dot file
-generate_dot(){
-	for arg in $@; do
-		echo $arg
-		dot -Tpng $arg -o $arg.png
-	done
-}
-
-generate_neato(){
-	neato -Tpng $1 -o $1.png
-}
-
-generate_twopi(){
-	twopi -Tpng $1 -o $1.png
-}
-
-generate_fdp(){
-	fdp -Tpng $1 -o $1.png
-}
-
-
-#DPI scaling support of the poor
-#It's ugly, but it kinda works
-config_desktop_screens(){
-	xrandr --output HDMI-0 --scale 0.7x0.7
-	xrandr --output DVI-I-1 --scale 1x1
-}
-
-
-#Create a script to debug problems at shutdown
-#Basically write dmesg to the log at the last moment possible
-create_debug_script(){
-	_debug_script="/usr/lib/systemd/system-shutdown/debug.sh"
-	
-	if ! [[ -e ${_debug_script} ]]; then
-		echo "Creating debug script ${_debug_script}"
-		sudo touch ${_debug_script}
-		sudo chmod 777 ${_debug_script}
-		cat >> ${_debug_script} <<-EOF
-		#! /bin/sh
-		mount -o remount,rw /
-		dmesg > /var/log/last_shutdown.log
-		mount -o remount,ro /
-		EOF
-	fi
-	
-	if [[ $1 == "force" ]]; then
-		sudo mv ${_debug_script} "${_debug_script}.bkp"
-		create_debug_script
-	fi
-}
-
-
-#Create a new efistub entry to boot directly the kernel from the efi
-#GRUB is now ancient history
-create_efistub(){
-	_efi_label="arch_efi"
-	_efi_disk="/dev/sda"
-	_efi_root="/dev/sda2"
-	_efi_part="1"
-	_efi_kernel="/vmlinuz-linux"
-	_efi_initrd="/initramfs-linux.img"
-	_efi_rootflags="noatime,discard"
-	_efi_args="root=${_efi_root} rw rootflags=${_efi_rootflags} elevator=noop ipv6.disable=1 initrd=${_efi_initrd}"
-
-	if [[ -n $1 ]]; then
-		if [[ $1 == "debug" ]]; then
-			_efi_args="${_efi_args} systemd.log_level=debug systemd.log_target=kmsg log_buf_len=4M enforcing=0"
-			if [[ $2 == "-f" ]]; then
-				create_debug_script force
-			else
-				create_debug_script
-			fi
-		else
-			_efi_label="$1"
-		fi
-	fi
-
-	echo "efibootmgr -d ${_efi_disk} -p ${_efi_part} -c -L ${_efi_label} -l ${_efi_kernel} -u ${_efi_args}"
-	sudo efibootmgr -d ${_efi_disk} -p ${_efi_part} -c -L ${_efi_label} -l ${_efi_kernel} -u ${_efi_args}
-}
-
-
-#Encode a file to the h264 or h265 format
-#Default on h265 at 2000Kb/s
-encode_file(){
-	if [[ -f $1 ]]; then
-		codec="nvenc_hevc"
-		bitrate=2000
-		
-		if [[ $2 -gt 0 ]]; then
-			bitrate=$2
-			if [[ $3 == "h264" ]]; then
-				codec="nvenc"
-			fi			
-		elif [[ $2 == "h264" ]]; then
-			codec="nvenc"
-			bitrate=4000
-		fi
-
-		out_file="${1%.*}.${codec}.mkv"
-		
-		echo "Encoding file: $1"
-		echo "Bitrate: $bitrate"
-		echo "Output file: $out_file"
-		
-		ffmpeg -i $1 -c:a copy -c:s copy -c:v ${codec} -b:v ${bitrate}k $out_file			
-	fi
 }
 
 
@@ -858,7 +544,7 @@ tar_compress(){
 	
 	echo "Compressing files:"
 	tar $tar_flags $gz_file $input_files
-	echo "\nOutput file: ${gz_file}"
+	echo -e "\nOutput file: ${gz_file}"
 }
 
 
@@ -875,25 +561,14 @@ tar_decompress(){
 		fi
 		mkdir -p $gz_dir
 		
-		echo "\nUncompressing archive: ${gz_file}"
+		echo -e "\nUncompressing archive: ${gz_file}"
 		tar $tar_flags $gz_file -C $gz_dir
 		echo "Output dir: ${gz_dir}"
 	done
 }
 
-# HACK: XXX: Warning, use at your own risk
-#If I write the same file over and over (a builroot boot img for example), at a 
-#certain point the sdcard will just stop writing new data
-#So I write random data to the sdcard before writing the file passed in argument
-ddddd(){
-	if [[ -e $2 ]] && [[ -b $1 ]]; then
-		sudo dd if=/dev/urandom of=$1 count=16384
-		sync
-		sudo dd if=$2 of=$1 bs=4K
-		sync
-	fi
-}
 
+# TODO: add nixos support
 #Clean up a bit the system
 clean_system(){
 	echo ""
@@ -943,32 +618,6 @@ chmod_files(){
 	sudo find $2 -type f -print0 | sudo xargs -0 chmod $1
 }
 
-#KDE has fucked up? Repair it! (more to come)
-repair_kde(){
-	echo -e "\nRebuilding KDE cache"
-	mv ~/.config/Trolltech.conf ~/.config/Trolltech.conf.old
-	kbuildsycoca4 --noincremental
-	echo -e "\nRemoving KDE mime types"
-}
-
-#Fetch the dsdt from the computer and decompile it
-get_dsdt(){
-	_acpi_tables=/sys/firmware/acpi/tables
-	mkdir orig decompiled
-	
-	echo "dsdt.aml"
-	sudo cat $_acpi_tables/DSDT > orig/dsdt.aml
-	
-	for ssdt in $_acpi_tables{,/dynamic}/SSDT*; do
-		file_ssdt=$(basename $ssdt:l).aml
-		echo "$file_ssdt"
-		sudo cat $ssdt > orig/$file_ssdt
-	done
-	
-	echo -e "\nDecompiling DSDT"
-	iasl -e orig/ssdt*.aml -d orig/dsdt.aml
-	mv orig/*.dsl decompiled/
-}
 
 # Set the terminal title (only for screen as of now)
 set_title(){
@@ -977,61 +626,9 @@ set_title(){
 	fi
 }
 
-# Init the user directory
-init_user_dir(){
-	mkdir -p $HOME/.screenlogs
-}
 
-# Recursively delete empty directories
-rrmdir(){
-	if [[ ! -d $1 ]]; then
-		return
-	fi
-
-	for file in $1/*; do
-		if [[ ! -d $file ]]; then
-			echo "Directory not empty: $file"
-			return
-		else
-			rrmdir $file
-		fi
-	done
-	echo "Deleting $1"
-	rmdir $1
-}
-
-# Open a graphical app with sudo
-wsudo(){
-	xhost +SI:localuser:root
-	sudo "$@"
-	xhost -SI:localuser:root
-	xhost
-}
-
-export OPENWRT_WORK_PATH=/_/dev/router/xiaomi_r1cl/openwrt/work
-export OPENWRT_SRC_PATH=/_/dev/router/xiaomi_r1cl/openwrt/openwrt_master
-export OPENWRT_FW_NAME=openwrt-snapshot-r7312-5c5bf8b865-ramips-mt76x8-miwifi-nano-squashfs-sysupgrade.bin
-export OPENWRT_IP_ADDR=192.168.43.112
-
-# Copy the files from the workspace to the OpenWRT sources
-openwrt_update_workspace(){
-	rsync -avh --progress --delete $OPENWRT_WORK_PATH/base-files/ $OPENWRT_SRC_PATH/target/linux/ramips/base-files/
-	rsync -avh --progress --delete $OPENWRT_WORK_PATH/driver/ $OPENWRT_SRC_PATH/package/driver/
-	cp -av $OPENWRT_WORK_PATH/config/MIWIFI-NANO.dts $OPENWRT_SRC_PATH/target/linux/ramips/dts/
-}
-
-# Compile OpenWRT for a xiaomi router
-openwrt_compile_firmware(){
-	make $OPENWRT_SRC_PATH/package/driver/hello_world/{clean,prepare,compile,install} -j1 V=s
-	# make -j8
-}
-
-# Send the OpenWRT firmware to a router
-openwrt_send_firmware(){
-	scp $OPENWRT_SRC_PATH/bin/targets/ramips/mt76x8/$OPENWRT_FW_NAME root@$OPENWRT_IP_ADDR:/tmp/firmware.bin
-}
-
-
+# Use the Internet connection from wifi/tethering and share it to a raspberry
+# directly connected to the Ethernet jack (No need for Ethernet crossover cable)
 share_internet(){
 	sudo ip link set enp3s0 up
 	sudo ip addr add 192.168.42.42/24 dev enp3s0
@@ -1057,17 +654,92 @@ connect_shared_internet(){
 }
 
 
-astro_lights(){
-# 	for f in *; do mv "$f" "1_$f"; done
-	if [[ -d lights ]]; then
-		echo "Lights directory found"
-		for d in lights[0-9]*; do
-			echo "Copying files from $d"
-			for f in $d/*.CR2; do
-				cp -av $f lights/${d}_`basename $f`
-			done
-		done
+################################################################################
+# Legacy functions
+################################################################################
+# I'm not using these functions anymore or not often
+# They are kept here to be removed easily when working on slow systems
+
+
+# Create a script to debug problems at shutdown
+# Basically writes dmesg to the log at the last moment possible
+# Add this to your kernel cmdline: systemd.log_level=debug systemd.log_target=kmsg log_buf_len=4M enforcing=0
+create_debug_script(){
+	_debug_script="/usr/lib/systemd/system-shutdown/debug.sh"
+	
+	if ! [[ -e ${_debug_script} ]]; then
+		echo "Creating debug script ${_debug_script}"
+		sudo touch ${_debug_script}
+		sudo chmod 777 ${_debug_script}
+		cat >> ${_debug_script} <<-EOF
+		#! /bin/sh
+		mount -o remount,rw /
+		dmesg > /var/log/last_shutdown.log
+		mount -o remount,ro /
+		EOF
 	fi
+	
+	if [[ $1 == "force" ]]; then
+		sudo mv ${_debug_script} "${_debug_script}.bkp"
+		create_debug_script
+	fi
+}
+
+# HACK: XXX: Warning, use at your own risk
+# If I write the same file over and over (a builroot boot img for example), at a
+# certain point the sdcard will just stop writing new data
+# So I write random data to the sdcard before writing the file passed in argument
+ddddd(){
+	if [[ -e $2 ]] && [[ -b $1 ]]; then
+		sudo dd if=/dev/urandom of=$1 count=16384
+		sync
+		sudo dd if=$2 of=$1 bs=4K
+		sync
+	fi
+}
+
+
+#Go to the parent dir
+#If there is an arg, go to $1 levels above the current directory
+..(){
+	typeset -i count=1
+	
+	if [[ $1 -gt 1 ]]; then
+		count=$1
+	fi
+	
+	for ((i = 0; i < $count; ++i)); do
+		cd ..
+	done
+	
+}
+
+
+# Recursively delete empty directories
+rrmdir(){
+	if [[ ! -d $1 ]]; then
+		return
+	fi
+
+	for file in $1/*; do
+		if [[ ! -d $file ]]; then
+			echo "Directory not empty: $file"
+			return
+		else
+			rrmdir $file
+		fi
+	done
+	echo "Deleting $1"
+	rmdir $1
+}
+
+
+# Open a graphical app with sudo
+wsudo(){
+	xhost +SI:localuser:root
+	sudo "$@"
+	xhost -SI:localuser:root
+	xhost
 }
 
 
@@ -1181,9 +853,12 @@ tabs 4
 #Plugins
 ################################################################################
 
+# Enable fish-like syntax highlighting
 # Plugins are already defined in the nixos configuration
-
-#Enable fish-like syntax highlighting
-# source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-#The path changed in the git version (also used in debian)
-#source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+zsh_syntax_path=/usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+zsh_git_syntax_path=/usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+if [[ -f $zsh_syntax_path ]]; then
+    source $zsh_syntax_path
+elif [[ -f $zsh_git_syntax_path ]]; then
+    source $zsh_git_syntax_path
+fi

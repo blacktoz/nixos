@@ -16,5 +16,36 @@
             } ]
         }
     },
-    "editor.renderWhitespace": "trailing"
+    "editor.renderWhitespace": "trailing",
+    "better-comments.tags": [
+        {
+            "tag": "todo",
+            "color": "#b58900",
+            "strikethrough": false,
+            "underline": false,
+            "backgroundColor": "transparent",
+            "bold": true,
+            "italic": false,
+            "multiline": true
+        },
+        {
+            "tag": "bug",
+            "color": "#d33682",
+            "underline": true,
+            "backgroundColor": "#d3368220",
+            "bold": true,
+        },
+        {
+            "tag": ["hack", "xxx"],
+            "color": "#9B59B6",
+            "backgroundColor": "#9B59B620",
+            "bold": true,
+        },
+        {
+            "tag": "fixme",
+            "color": "#dc322f",
+            "backgroundColor": "#dc322f20",
+            "bold": true,
+        }
+    ]
 }

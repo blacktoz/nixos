@@ -4,9 +4,6 @@
 # license=(GPLv3+)
 ################################################################################
 
-os_id=$(grep -i '^ID=' /etc/os-release | cut -d'=' -f2 | tr -d '"')
-load_full_zsh=false
-
 
 ################################################################################
 # Prompt
@@ -121,7 +118,7 @@ zstyle ':completion:*:manuals' separate-sections true
 
 
 ################################################################################
-#Variables
+# Variables
 ################################################################################
 
 # Use Kate if a GUI is available
@@ -140,9 +137,11 @@ export HISTSIZE=16777216
 export SAVEHIST=16777216
 # Default chars used to define a word.
 export WORDCHARS="*?_-.[]~=/&;!#$%^(){}<>"
-# Variables to calculate the time a command took to execute (see the hooks functions)
-typeset -ig _preexec=$(date '+%s%N' | cut -b1-13)
-typeset -ig _postexec=$(date '+%s%N' | cut -b1-13)
+
+# Used for loading aliases/functions/functionalities specific to some OS
+os_id=$(grep -i '^ID=' /etc/os-release | cut -d'=' -f2 | tr -d '"')
+# Variable used to optimize the runtime by not loading every aliases/functions
+load_full_zsh=false
 
 
 ################################################################################
@@ -163,6 +162,7 @@ typeset -U path
 ################################################################################
 # Aliases
 ################################################################################
+
 alias ll="ls -lhpF --color=auto --time-style=+'%Y-%m-%d %H:%M'"
 #ll sorted by time, oldest first
 alias l="ll -tr"
@@ -291,6 +291,7 @@ fi
 ################################################################################
 # Legacy aliases
 ################################################################################
+
 # I'm not using these aliases anymore or not often
 # They are kept here to be removed easily when working on slow systems
 
@@ -386,70 +387,81 @@ if [[ $load_full_zsh == true ]]; then
     alias msi_battery_60="sudo isw -s 0xef 188"
 fi # load_full_zsh
 
+
 ################################################################################
 # Functions
 ################################################################################
 
-# Print the duration given a number of seconds + milliseconds
+# Print the duration given a number of milliseconds
 # Example: 63123 returns 1:03.123
 format_duration(){
-    duration=$1
-    millis=${duration[-3, -1]}
-    
-    if [[ $duration -ge 1000 ]]; then
-        duration=${duration[1, -4]}
-        hours=$(( $duration / 3600 ))
-        duration=$(( $duration % 3600 ))
-        minutes=$(( $duration / 60 ))
-        duration=$(( $duration % 60 ))
-        seconds=$duration
+    local duration=$1
+    local millis=$(( $duration % 1000 ))
+    local total_seconds=$(( $duration / 1000 ))
+
+    if (( $total_seconds == 0 )); then
+        printf "0.%03d" $millis
+        return
+    fi
+
+    local hours=$(( $total_seconds / 3600 ))
+    local minutes=$(( ( $total_seconds % 3600 ) / 60 ))
+    local seconds=$(( $total_seconds % 60 ))
+
+    if (( $hours > 0 )); then
+        printf "%d:%02d:%02d.%03d" $hours $minutes $seconds $millis
+    elif (( $minutes > 0 )); then
+        printf "%d:%02d.%03d" $minutes $seconds $millis
     else
-        hours=0
-        minutes=0
-        seconds=0
+        printf "%d.%03d" $seconds $millis
     fi
-    
-    result=""
-    
-    if [[ $hours -ge 1 ]]; then
-        minutes=${(l:2::0:)minutes}
-        seconds=${(l:2::0:)seconds}
-        result="$hours:$minutes:"
-    elif [[ $minutes -ge 1 ]]; then
-        seconds=${(l:2::0:)seconds}
-        result="$minutes:"
-    fi
-
-    millis=${(l:3::0:)millis}
-
-    result="${result}${seconds}.${millis}"
-    echo -n "$result"
 }
 
+
+# Format size in bytes to human readable KiB/MiB/GiB
 format_size(){
-    # TODO format size in KiB instead of KB
-    size=$1
-    size_formatted=""
+    local bytes=$1
 
-    if [[ $2 = "M" ]]; then
-        size=$(( $size * 1000 ))
+    if (( bytes <= 0 )); then
+        printf "0 B"
+        return
     fi
 
-    size_GB=$(( $size / 1000000 ))
-    size=$(( $size % 1000000 ))
-    size_MB=$(( $size / 1000 ))
-    size=$(( $size % 1000 ))
+    local gib=$(( bytes / ( 1024 * 1024 * 1024 )))
+    bytes=$(( bytes % ( 1024 * 1024 * 1024 )))
+    local mib=$(( bytes / ( 1024 * 1024 )))
+    bytes=$(( bytes % ( 1024 * 1024 )))
+    local kib=$(( bytes / 1024 ))
+    bytes=$(( bytes % 1024 ))
 
-    if [[ $size_GB -gt 0 ]]; then
-        size_formatted="${size_GB}.${size_MB}G"
-    elif [[ $size_MB -gt 0 ]]; then
-        rest=$(( $size / 100 ))
-        size_formatted="${size_MB}.${rest}M"
+    # Small loss of precision with the fraction but I can live with it
+    if (( gib > 0 )); then
+        printf "%d.%d GiB" $gib $(( mib * 10 / 1024 ))
+    elif (( mib > 0 )); then
+        printf "%d.%d MiB" $mib $(( kib * 10 / 1024 ))
+    elif (( kib > 0 )); then
+        printf "%d.%d KiB" $kib $(( bytes * 10 / 1024 ))
     else
-        size_formatted="${size}K"
+        printf "%d B" $bytes
     fi
+}
 
-    printf "$size_formatted"
+
+# Set the terminal title (for termm, screen and tmux)
+set_title(){
+    if [[ -n $TERMM ]] || [[ "$TERM" == "screen"* ]] || [[ "$TERM" == "tmux"* ]]; then
+        TERM_TITLE="$1"
+        local cmd=(${=1})
+        if [[ -z "${cmd[1]}" ]]; then
+            small_title="${PWD##*/}"
+            [[ -z "$small_title" ]] && small_title="/"
+        elif [[ "${cmd[1]}" == "sudo" ]]; then
+            small_title="${cmd[2]}"
+        else
+            small_title="${cmd[1]}"
+        fi
+        echo -e "\033k${small_title}\033\\"
+    fi
 }
 
 
@@ -569,16 +581,23 @@ tar_decompress(){
 }
 
 
-# TODO: add nixos support
 # Clean up a bit the system
 clean_system(){
-    echo ""
+    echo -e "\nCleaning system of unnecessary files (I hope)"
     df -h /
-    _root_info=($(df / | tail -n 1))
-    _used_bytes_before=${_root_info[3]}
+    local used_bytes_before=$(df --block-size=1 / | awk 'NR==2 {print $3}')
 
-    echo -e "\nCleaning pacman cache (keeping the last 2 versions)"
-    sudo paccache -rk 2
+    if [[ $os_id == "arch" ]]; then
+        echo -e "\nCleaning Pacman cache (keeping the last 2 versions)"
+        sudo paccache -rk 2
+    elif [[ $os_id == "nixos" ]]; then
+        echo -e "\nRunning NixOS garbage collection (keeping generations of the last 30 days)"
+        sudo nix-collect-garbage --delete-older-than 30d
+    elif [[ $os_id == "debian" ]]; then
+        echo -e "\nCleaning APT cache and removing orphaned packages"
+        sudo apt clean
+        sudo apt autoremove --purge
+    fi
 
     echo -e "\nDeleting old logs"
     sudo find /var/log/journal -name "system@*.journal" -delete > /dev/null
@@ -587,21 +606,25 @@ clean_system(){
     echo -e "\nDeleting coredumps"
     sudo rm -f /var/lib/systemd/coredump/core.*
 
-#    echo -e "\nDeleting google-chrome cache"
-#    find ~/.config/google-chrome*/Default/File\ System/0* -delete > /dev/null
-#    find ~/.cache/google-chrome*/Default/Cache -delete > /dev/null
+    if [[ "$1" == "--cache" ]]; then
+        # TODO: I don't have chrome installed to check if it still works
+        echo -e "\nDeleting google-chrome cache"
+        find ~/.config/google-chrome*/Default/File\ System/0* -delete > /dev/null
+        find ~/.cache/google-chrome*/Default/Cache -delete > /dev/null
 
-#    echo -e "\nDeleting files in ~/.cache"
-#    find ~/.cache/thumbnails -name "*.png" -delete > /dev/null
+        echo -e "\nDeleting firefox cache"
+        find ~/.cache/mozilla/firefox/* -delete > /dev/null
 
-    echo ""
+        echo -e "\nDeleting files in ~/.cache"
+        find ~/.cache/thumbnails -name "*.png" -delete > /dev/null
+    fi
+
+    echo -e "\nAll done!"
     df -h /
-
-    _root_info=($(df / | tail -n 1))
-    _used_bytes_after=${_root_info[3]}
-    (( _bytes_released = $_used_bytes_before - $_used_bytes_after ))
-    space_released=$(format_size $_bytes_released)
-    echo -e "\nSpace released on the system: $space_released"
+    local used_bytes_after=$(df --block-size=1 / | awk 'NR==2 {print $3}')
+    local bytes_released=$(( $used_bytes_before - $used_bytes_after ))
+    local space_released=$(format_size $bytes_released)
+    echo "Space released on the system: $space_released"
 }
 
 
@@ -619,17 +642,9 @@ chmod_scripts(){
 }
 
 
-# Set the terminal title (only for screen as of now)
-set_title(){
-    if [[ -n $STY ]]; then
-        echo -e "\033k${1}\033\\"
-    fi
-}
-
-
 # Use the Internet connection from wifi/tethering and share it to a raspberry
 # directly connected to the Ethernet jack (No need for Ethernet crossover cable)
-share_internet(){
+enable_shared_internet(){
     sudo ip link set enp3s0 up
     sudo ip addr add 192.168.42.42/24 dev enp3s0
     sudo sysctl net.ipv4.ip_forward=1
@@ -642,7 +657,7 @@ share_internet(){
     sudo iptables -I INPUT -p tcp --dport 53 -s 192.168.42.0/24 -j ACCEPT
 }
 
-clean_shared_internet(){
+disable_shared_internet(){
     sudo iptables -F
     sudo iptables -t nat -F
 }
@@ -657,6 +672,7 @@ connect_shared_internet(){
 ################################################################################
 # Legacy functions
 ################################################################################
+
 # I'm not using these functions anymore or not often
 # They are kept here to be removed easily when working on slow systems
 
@@ -748,24 +764,30 @@ fi # load_full_zsh
 # Hooks
 ################################################################################
 
-# Function called before a command is executed
+zmodload zsh/datetime
+typeset -g _preexec=$EPOCHREALTIME
+
+
+# Function called right before a command is executed
 preexec(){
     # Set the running command as the title
-    set_title $(echo $1)
+    set_title "$1"
 
     # _preexec stores the time before a command is executed
-    _preexec=$(date '+%s%N' | cut -b1-13)
+    _preexec=$EPOCHREALTIME
 }
 
-precmd(){ 
-    # _postexec stores the time after a command is executed
-    # The two are used to calculate the duration of a command and print it in the RPROMPT
-    _postexec=$(date '+%s%N' | cut -b1-13)
-    _exec_time="$(( $_postexec - $_preexec ))"
-    rprompt_time=$(format_duration $_exec_time)
 
-    # When the last command is finished, set the directory name as title
-    set_title $(basename $(pwd))
+# Function called right after a command finished running
+precmd(){
+    # The two are used to calculate the duration of a command and print it in the RPROMPT
+    local pretime="${_preexec%.*}${${_preexec#*.}:0:3}"
+    local posttime="${EPOCHREALTIME%.*}${${EPOCHREALTIME#*.}:0:3}"
+
+    rprompt_time=$(format_duration "$(( $posttime - $pretime ))")
+
+    # When the last command is finished, set the current directory name as title
+    set_title "${PWD##*/}"
 
     RPROMPT="%{$fg_bold[$prompt_user_color]%}%~ %{$fg[magenta]%}- %{$fg_bold[cyan]%}%n%{$fg_bold[magenta]%}:%{$fg[cyan]%}%m%{$fg[magenta]%}:%{$fg[blue]%}%l %{$fg[magenta]%}- %{$fg_bold[white]%}%T %{$fg[magenta]%}- %{$fg_bold[yellow]%}[$rprompt_time]%{$reset_color%}"
 }
@@ -775,22 +797,10 @@ precmd(){
 # Keybindings
 ################################################################################
 
-# Setup keys which might not be default
-# [[ -n "${key[Up]}"       ]]  && bindkey  "${key[Up]}"       up-line-or-history
-# [[ -n "${key[Down]}"     ]]  && bindkey  "${key[Down]}"     down-line-or-history
-# [[ -n "${key[Left]}"     ]]  && bindkey  "${key[Left]}"     backward-char
-# [[ -n "${key[Right]}"    ]]  && bindkey  "${key[Right]}"    forward-char
-# [[ -n "${key[Home]}"     ]]  && bindkey  "${key[Home]}"     beginning-of-line
-# [[ -n "${key[End]}"      ]]  && bindkey  "${key[End]}"      end-of-line
-# [[ -n "${key[PageUp]}"   ]]  && bindkey  "${key[PageUp]}"   beginning-of-buffer-or-history
-# [[ -n "${key[PageDown]}" ]]  && bindkey  "${key[PageDown]}" end-of-buffer-or-history
-# [[ -n "${key[Insert]}"   ]]  && bindkey  "${key[Insert]}"   overwrite-mode
-# [[ -n "${key[Delete]}"   ]]  && bindkey  "${key[Delete]}"   delete-char
-
-
 # NOTE: You can find the keys to use with the command "showkey -a"
 
-# Search the history from the line up to the cursor position when using Up or Down key
+# Search the history for the line up to the cursor position when using Up or Down key
+# It might be the best feature of the shell
 autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
 zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
@@ -818,9 +828,9 @@ bindkey "^[[1;5D" vi-backward-blank-word            # Ctrl + Left
 bindkey "^[[1;5C" vi-forward-blank-word             # Ctrl + Right
 
 # Deletes the word before the cursor
-bindkey    "^[[1;6D" backward-delete-word           # Ctrl + Shift + Left 
+bindkey "^[[1;6D" backward-delete-word              # Ctrl + Shift + Left 
 # Deletes the word after the cursor
-bindkey    "^[[1;6C" delete-word                    # Ctrl + Shift + Right
+bindkey "^[[1;6C" delete-word                       # Ctrl + Shift + Right
 
 # Swap the case of the char under the cursor
 bindkey "^[[1;2A" vi-swap-case                      # Shift + Up
@@ -833,13 +843,28 @@ bindkey "^[[1;2D" transpose-words                   # Shift + Left
 bindkey "^[[1;2C" end-of-line                       # Shift + Right
 
 # Undo the last action
-bindkey "^[[1;2P" undo                              # Shift + F1
+bindkey "^[[1;2P" undo                                          # Shift + F1
 # Redo the last action undone
-bindkey "^[[1;2Q" redo                              # Shift + F2
+bindkey "^[[1;2Q" redo                                          # Shift + F2
 # You can also launch a command when using a shortcut
-bindkey -s "^[[1;2R" "watch -n 1 'dmesg | tail -n 16'\n"    # Shift + F3
-bindkey -s "^[[15;2~" "yaourt -Syu\n"                       # Shift + F5
-bindkey -s "^[[17;2~" "yaourt -Syua --noconfirm\n"          # Shift + F6
+bindkey -s "^[[1;2R" "watch -n 1 'sudo dmesg | tail -n 24'\n"        # Shift + F3
+
+# Shortcuts for updating the system
+if [[ $os_id == "arch" ]]; then
+    bindkey -s "^[[15;2~" "sudo pacman -Syu --noconfirm\n"      # Shift + F5
+    bindkey -s "^[[17;2~" "yay --noconfirm\n"                   # Shift + F6
+elif [[ $os_id == "nixos" ]]; then
+    bindkey -s "^[[15;2~" "sudo nixos-rebuild switch\n"         # Shift + F5
+    bindkey -s "^[[17;2~" "sudo nixos-rebuild boot\n"           # Shift + F6
+elif [[ $os_id == "debian" ]]; then
+    bindkey -s "^[[15;2~" "sudo apt update\n"                   # Shift + F5
+    bindkey -s "^[[17;2~" "sudo apt upgrade\n"                  # Shift + F6
+fi
+
+# Run man on the last command
+bindkey -s "^[OP" "man \$(fc -ln -1 | cut -d ' ' -f 1)\n"       # F1
+# Same with tldr instead
+bindkey -s "^[OQ" "tldr \$(fc -ln -1 | cut -d ' ' -f 1)\n"      # F2
 
 
 ################################################################################

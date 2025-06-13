@@ -132,6 +132,7 @@ export MANWIDTH=${MANWIDTH:-80}
 # Only show the last 10 visited dirs (type "cd -<TAB>")
 export DIRSTACKSIZE=10
 export DIRSTACKFILE=~/.zdirs
+# I use the history a lot with up-line-or-beginning-search (see keybinds)
 export HISTFILE=$HOME/.zsh_history
 export HISTSIZE=16777216
 export SAVEHIST=16777216
@@ -140,9 +141,9 @@ export WORDCHARS="*?_-.[]~=/&;!#$%^(){}<>"
 
 # Used for loading aliases/functions/functionalities specific to some OS
 os_id=$(grep -i '^ID=' /etc/os-release | cut -d'=' -f2 | tr -d '"')
-# Variable used to optimize the runtime by not loading every aliases/functions
+# Variable used to skip loading some aliases/functions
 load_full_zsh=false
-
+enable_git_prompt=true
 
 ################################################################################
 # Path
@@ -465,6 +466,17 @@ set_title(){
 }
 
 
+# Update variables used in the PROMPT or RPROMPT
+update_prompt(){
+    if [[ $enable_git_prompt == true ]]; then
+        git_prompt=$(git remote get-url origin 2>/dev/null | sed -E "s|.*/([^/]+)(\.git)|%{$fg[magenta]%}(%F{2}\1%{$fg[magenta]%}:|")
+        git_prompt=$git_prompt$(git branch --show-current 2>/dev/null | sed "s|.*|%F{2}&%{$fg[magenta]%})|")
+    else
+        git_prompt=""
+    fi
+}
+
+
 # It isn't possible to be more self-explanatory
 mkdir_cd(){
     mkdir -p $1
@@ -766,6 +778,8 @@ fi # load_full_zsh
 
 zmodload zsh/datetime
 typeset -g _preexec=$EPOCHREALTIME
+# git prompt triples the boot time from 5ms to 15ms (worth it?)
+update_prompt
 
 
 # Function called right before a command is executed
@@ -789,7 +803,13 @@ precmd(){
     # When the last command is finished, set the current directory name as title
     set_title "${PWD##*/}"
 
-    RPROMPT="%{$fg_bold[$prompt_user_color]%}%~ %{$fg[magenta]%}- %{$fg_bold[cyan]%}%n%{$fg_bold[magenta]%}:%{$fg[cyan]%}%m%{$fg[magenta]%}:%{$fg[blue]%}%l %{$fg[magenta]%}- %{$fg_bold[white]%}%T %{$fg[magenta]%}- %{$fg_bold[yellow]%}[$rprompt_time]%{$reset_color%}"
+    RPROMPT="%{$fg_bold[$prompt_user_color]%}%~${git_prompt} %{$fg[magenta]%}- %{$fg_bold[cyan]%}%n%{$fg_bold[magenta]%}:%{$fg[cyan]%}%m%{$fg[magenta]%}:%{$fg[blue]%}%l %{$fg[magenta]%}- %{$fg_bold[white]%}%T %{$fg[magenta]%}- %{$fg_bold[yellow]%}[$rprompt_time]%{$reset_color%}"
+}
+
+
+# Function called when we change the current directory
+chpwd(){
+    update_prompt
 }
 
 

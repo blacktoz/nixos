@@ -461,7 +461,7 @@ set_title(){
         else
             small_title="${cmd[1]}"
         fi
-        echo -e "\033k${small_title}\033\\"
+        echo -ne "\033k${small_title}\033\\"
     fi
 }
 
@@ -474,6 +474,30 @@ update_prompt(){
     else
         git_prompt=""
     fi
+}
+
+
+# This builtin is taking precedence over the screen binary
+# If no args are given, then it auto-connects to the "main" session
+screen(){
+    # Pass arguments to the real screen program
+    if [[ $# -gt 0 ]]; then
+        command screen "$@"
+        return
+    fi
+    # Check if "main" session exists
+    if command screen -ls | grep -q "\.main"; then
+        if command screen -ls | grep "\.main" | grep -qi "Dead"; then
+            echo "Found dead screen session, wiping it"
+            command screen -wipe
+        else
+            echo "Reconnecting to main screen session"
+            command screen -d -r main
+            return
+        fi
+    fi
+    echo "Creating main screen session"
+    command screen -S main
 }
 
 

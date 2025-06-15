@@ -4,6 +4,7 @@
 let
   user_name = "keiwop";
   host_name = "nix-thinkpad";
+  builder_addr = "arch-laptop";
   cfg_path = "/_/etc/nixos";
   secrets = import ./secrets.nix;
 in
@@ -15,6 +16,7 @@ in
   imports = [
     ./hardware-configuration.nix
     (import ./syncthing.nix { user_name = user_name; host_name = host_name; cfg_path = cfg_path; secrets = secrets; })
+    # (import ./remote_build.nix { user_name = user_name; builder_addr = builder_addr; pkgs = pkgs; })
   ];
 
 
@@ -61,6 +63,8 @@ in
     hexedit
     fzf
     tldr
+    cryfs
+    killall
 
     # System monitoring
     pv
@@ -76,6 +80,7 @@ in
     # GUI packages
     kdePackages.kate
     kdePackages.filelight
+    kdePackages.kcalc
     vscodium
     gedit
     gparted
@@ -89,7 +94,8 @@ in
     fortune
 
     # Development packages (more in dev_shells)
-    (pkgs.callPackage ./termm.nix {})   # Get termm.nix from https://bitbucket.org/keiwop/termm_packaging
+    (pkgs.callPackage ./packages/termm.nix {})   # Get termm.nix from https://bitbucket.org/keiwop/termm_packaging
+    # (pkgs.callPackage ./packages/riscv32ec_toolchain.nix {})
     nix-prefetch-git
     direnv
     pulseview

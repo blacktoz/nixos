@@ -152,9 +152,13 @@ enable_git_prompt=true
 # All the directories in /_ are accessible with cd from anywhere
 cdpath=(/_ /data)
 
-path=($path /sbin /usr/sbin /_/bin /_/src/scripts /_/src/python /_/dev/kbd/bin /_/opt/riscv32ec/bin)
-path=($path /opt/intel/bin /opt/altera/quartus/bin /opt/esp-open-sdk/xtensa-lx106-elf/bin)
-ld_library_path=($ld_library_path /_/lib /_/src/kbd/bin/lib /opt/intel/lib /opt/esp-open-sdk/xtensa-lx106-elf/lib /_/opt/riscv32ec/lib)
+path=($path /_/bin /_/src/scripts)
+
+if [[ "$os_id" != "nixos" ]]; then
+    path=($path /sbin /usr/sbin /_/src/python /_/dev/kbd/bin /_/opt/riscv32ec/bin)
+    path=($path /opt/intel/bin /opt/altera/quartus/bin /opt/esp-open-sdk/xtensa-lx106-elf/bin)
+    ld_library_path=($ld_library_path /_/lib /_/src/kbd/bin/lib /opt/intel/lib /opt/esp-open-sdk/xtensa-lx106-elf/lib /_/opt/riscv32ec/lib)
+fi
 
 # Remove the duplicates from the path
 typeset -U path

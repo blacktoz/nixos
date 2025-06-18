@@ -13,8 +13,9 @@ let
   # home-manager = builtins.fetchTarball https://github.com/nix-community/home-manager/archive/release-25.05.tar.gz;
 
   # Custom packages
-  termm = (pkgs.callPackage ./packages/termm.nix {});   # Get termm.nix from https://bitbucket.org/keiwop/termm_packaging
+  termm = (pkgs.callPackage ./packages/termm.nix {});   # Get updated termm.nix from https://bitbucket.org/keiwop/termm_packaging
   riscv32ec_toolchain = (pkgs.callPackage ./packages/riscv32ec_toolchain.nix {});
+  kwin_focus_app = (pkgs.callPackage ./packages/kwin_focus_app.nix {});   # Get updated kwin_focus_app.nix from https://bitbucket.org/keiwop/kwin_focus_app
   nix_link_config = (pkgs.callPackage ./scripts/nix_link_config.nix { inherit user_name cfg_path; });
   create_direnv = (pkgs.callPackage ./scripts/create_direnv.nix { inherit cfg_path; });
 in
@@ -122,6 +123,7 @@ in
     # Custom packages
     termm
     # riscv32ec_toolchain
+    kwin_focus_app
     nix_link_config
     create_direnv
   ];

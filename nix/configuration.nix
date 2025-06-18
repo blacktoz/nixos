@@ -1,4 +1,3 @@
-
 { config, pkgs, ... }:
 
 let
@@ -7,6 +6,14 @@ let
   builder_addr = "arch-laptop";
   cfg_path = "/_/etc/nixos";
   secrets = import ./secrets.nix;
+
+  # home-manager = builtins.fetchTarball https://github.com/nix-community/home-manager/archive/release-25.05.tar.gz;
+
+  # Custom packages
+  termm = (pkgs.callPackage ./packages/termm.nix {});   # Get termm.nix from https://bitbucket.org/keiwop/termm_packaging
+  riscv32ec_toolchain = (pkgs.callPackage ./packages/riscv32ec_toolchain.nix {});
+  nix_link_config = (pkgs.callPackage ./scripts/nix_link_config.nix { inherit user_name cfg_path; });
+  create_direnv = (pkgs.callPackage ./scripts/create_direnv.nix { inherit cfg_path; });
 in
 {
   #############################################################################
@@ -15,8 +22,10 @@ in
 
   imports = [
     ./hardware-configuration.nix
-    (import ./syncthing.nix { user_name = user_name; host_name = host_name; cfg_path = cfg_path; secrets = secrets; })
+    (import ./app_config/syncthing.nix { user_name = user_name; host_name = host_name; cfg_path = cfg_path; secrets = secrets; })
+    # (import ./app_config/kwin.nix)
     # (import ./remote_build.nix { user_name = user_name; builder_addr = builder_addr; pkgs = pkgs; })
+    # (import "${home-manager}/nixos")
   ];
 
 
@@ -81,11 +90,20 @@ in
     kdePackages.kate
     kdePackages.filelight
     kdePackages.kcalc
+    kdePackages.kconfig
+    kdotool
     vscodium
     gedit
     gparted
     evince
     cheese
+    code-cursor
+
+    # Hyprland
+    wofi
+    waybar
+    hyprpaper
+    networkmanagerapplet
 
     # Misc packages
     f3
@@ -94,11 +112,15 @@ in
     fortune
 
     # Development packages (more in dev_shells)
-    (pkgs.callPackage ./packages/termm.nix {})   # Get termm.nix from https://bitbucket.org/keiwop/termm_packaging
-    # (pkgs.callPackage ./packages/riscv32ec_toolchain.nix {})
-    nix-prefetch-git
     direnv
+    nix-prefetch-git
     pulseview
+
+    # Custom packages
+    termm
+    # riscv32ec_toolchain
+    nix_link_config
+    create_direnv
   ];
 
   programs.zsh = {
@@ -131,13 +153,15 @@ in
     group = "${user_name}";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      
+
     ];
   };
 
   users.groups.${user_name}.gid = 1000;
-  
+
   security.sudo.wheelNeedsPassword = false;
+
+  # home-manager.users.${user_name} = import ./home.nix { inherit pkgs config; };
 
   # system.activationScripts.copy_ssh_keys = ''
   #   mkdir -p "/home/${user_name}/.ssh"
@@ -173,7 +197,7 @@ in
       Type = "oneshot";
       RemainAfterExit = true;
       Environment = "PATH=/run/current-system/sw/bin:/usr/bin:/bin";
-      ExecStart = "${cfg_path}/nix_link_config.sh";
+      ExecStart = "${nix_link_config}/bin/nix_link_config";
     };
   };
 

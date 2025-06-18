@@ -1,4 +1,7 @@
 #! /bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C): 2025 - keiwop <keiwop.dev@gmail.com>
+
 
 USER_NAME="keiwop"
 CFG_DIR=/_/etc/nixos

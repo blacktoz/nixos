@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C): 2025 - keiwop <keiwop.dev@gmail.com>
+
 { config, pkgs, ... }:
 
 let
@@ -89,7 +92,6 @@ in
     # GUI packages
     kdePackages.kate
     kdePackages.filelight
-    kdePackages.kcalc
     kdePackages.kconfig
     kdotool
     vscodium
@@ -98,6 +100,7 @@ in
     evince
     cheese
     code-cursor
+    gnome-calculator
 
     # Hyprland
     wofi

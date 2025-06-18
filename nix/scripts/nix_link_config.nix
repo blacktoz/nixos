@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C): 2025 - keiwop <keiwop.dev@gmail.com>
+
 { pkgs, user_name, cfg_path }:
 
 pkgs.stdenv.mkDerivation {

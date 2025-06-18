@@ -1,4 +1,7 @@
 #! /bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C): 2025 - keiwop <keiwop.dev@gmail.com>
+
 
 SHELLS_PATH="/_/etc/nixos/nix/dev_shells"
 TARGET_NIX_FILE="shell.nix"

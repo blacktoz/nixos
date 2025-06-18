@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C): 2025 - keiwop <keiwop.dev@gmail.com>
 
 # I install termm in my configuration.nix this way:
 # environment.systemPackages = with pkgs; [

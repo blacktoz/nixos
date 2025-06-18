@@ -1,7 +1,7 @@
 
 ################################################################################
-# keiwop="Maxime Martin"
-# license=(GPLv3+)
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C): 2013 - 2025 - keiwop <keiwop.dev@gmail.com>
 ################################################################################
 
 
@@ -271,6 +271,16 @@ alias ext4_no_journal="sudo mke2fs -t ext4 -O \^has_journal /dev/sdz1"
 
 # Get current weather for wxtoimg
 alias update_weather="wget --directory-prefix=/tmp https://celestrak.org/NORAD/elements/weather.txt; cp -v /tmp/weather.txt ~/.wxtoimg/weather.txt"
+
+# Clean orphaned shortcuts
+alias kde_clean_shortcuts="qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.cleanUp"
+alias kde_read_shortcut="kreadconfig6 --file kglobalshortcutsrc --group kwin  --key 'Focus Firefox'"
+alias kde_log_scripts="journalctl -f QT_CATEGORY=js QT_CATEGORY=kwin_scripting"
+alias kde_list_scripts="kpackagetool6 --type=KWin/Script --list"
+alias kde_install_script="kpackagetool6 --type=KWin/Script -i /path/to/script"
+alias kde_enable_script="kwriteconfig6 --file kwinrc --group Plugins --key focus_appEnabled true; qdbus org.kde.KWin /KWin reconfigure"
+alias kde_disable_script="kwriteconfig6 --file kwinrc --group Plugins --key focus_appEnabled false; qdbus org.kde.KWin /KWin reconfigure"
+alias kde_reload_script="kde_disable_script; sleep 0.5; kde_clean_shortcuts; sleep 0.5; kde_enable_script"
 
 if [[ "$os_id" == "arch" ]]; then
     # Delete the lock put in place by pacman

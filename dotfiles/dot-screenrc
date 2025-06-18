@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C): 2025 - keiwop <keiwop.dev@gmail.com>
+
 # Define some macros for use in the screenrc
 backtick 0 0 0 whoami
 backtick 1 5 5 sh -c 'uptime | sed "s|.*average: \(.*\)|\1|"'

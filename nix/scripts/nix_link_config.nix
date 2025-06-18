@@ -5,7 +5,7 @@
 
 pkgs.stdenv.mkDerivation {
   name = "nix_link_config";
-  version = "1.0";
+  version = "0.1";
   src = pkgs.lib.cleanSource "${cfg_path}/scripts/nix_link_config.sh";
   buildInputs = [ pkgs.stow ];
   buildCommand = ''
@@ -13,7 +13,7 @@ pkgs.stdenv.mkDerivation {
     cp $src $out/bin/nix_link_config
     chmod +x $out/bin/nix_link_config
     substituteInPlace $out/bin/nix_link_config \
-      --replace "USER_NAME=\"keiwop\"" "USER_NAME=\"${user_name}\"" \
-      --replace "CFG_DIR=/_/etc/nixos" "CFG_DIR=\"${cfg_path}\""
+      --replace-fail "USER_NAME=\"keiwop\"" "USER_NAME=\"${user_name}\"" \
+      --replace-fail "CFG_DIR=/_/etc/nixos" "CFG_DIR=\"${cfg_path}\""
   '';
 }

@@ -15,8 +15,6 @@ let
   # Custom packages
   termm = (pkgs.callPackage ./packages/termm.nix {});   # Get updated termm.nix from https://bitbucket.org/keiwop/termm_packaging
   kwin_focus_app = (pkgs.callPackage ./packages/kwin_focus_app.nix {});   # Get updated kwin_focus_app.nix from https://bitbucket.org/keiwop/kwin_focus_app
-  riscv32ec_toolchain = (pkgs.callPackage ./packages/riscv32ec_toolchain.nix {});
-  minichlink = (pkgs.callPackage ./packages/minichlink.nix {});
   nix_link_config = (pkgs.callPackage ./scripts/nix_link_config.nix { inherit user_name cfg_path; });
   create_direnv = (pkgs.callPackage ./scripts/create_direnv.nix { inherit cfg_path; });
 in
@@ -27,6 +25,7 @@ in
 
   imports = [
     ./hardware-configuration.nix
+    (import ./machine_config/${host_name}.nix { inherit pkgs user_name; })
     (import ./app_config/syncthing.nix { user_name = user_name; host_name = host_name; cfg_path = cfg_path; secrets = secrets; })
     # (import ./app_config/kwin.nix)
     # (import ./remote_build.nix { user_name = user_name; builder_addr = builder_addr; pkgs = pkgs; })
@@ -128,7 +127,7 @@ in
     # Custom packages
     termm
     # riscv32ec_toolchain
-    minichlink
+    # minichlink
     # kwin_focus_app
     nix_link_config
     create_direnv
@@ -162,7 +161,8 @@ in
     shell = pkgs.zsh;
     description = "${user_name}";
     group = "${user_name}";
-    extraGroups = [ "networkmanager" "wheel" "dialout" ];
+    # extraGroups = [ "networkmanager" "wheel" "dialout" ];
+    extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
 
     ];
@@ -212,7 +212,7 @@ in
     };
   };
 
-  services.udev.packages = [ minichlink ];
+  # services.udev.packages = [ minichlink ];
 
 
   #############################################################################

@@ -15,17 +15,17 @@ let
   crossPkgs = import <nixpkgs> { crossSystem = customCrossSystem; };
 in
 
-pkgs.stdenv.mkDerivation {
-  name = "riscv32ec-none-elf";
-  buildInputs = [
+pkgs.buildEnv {
+  name = "riscv32ec-toolchain";
+
+  paths = [
     crossPkgs.buildPackages.gcc
     crossPkgs.buildPackages.binutils
+    pkgs.gnumake
   ];
-  installPhase = ''
-    mkdir -p $out/bin
-    cp ${crossPkgs.buildPackages.gcc}/bin/riscv32-none-elf-* $out/bin/
-    cp ${crossPkgs.buildPackages.binutils}/bin/riscv32-none-elf-* $out/bin/
-  '';
+
+  pathsToLink = [ "/bin" ];
+
   meta = {
     description = "Custom RISC-V toolchain for rv32ec with ilp32e ABI";
     license = pkgs.lib.licenses.gpl3;

@@ -19,6 +19,7 @@ pkgs.mkShell {
   nativeBuildInputs = [
     crossPkgs.buildPackages.gcc
     crossPkgs.buildPackages.binutils
+    gnumake
   ];
 
 

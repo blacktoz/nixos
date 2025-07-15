@@ -6,16 +6,17 @@
 let
   user_name = "keiwop";
   host_name = "nix-thinkpad";
-  builder_addr = "arch-laptop";
   cfg_path = "/_/etc/nixos";
+  builder_addr = "arch-laptop";
   secrets = import ./secrets.nix;
 
   # home-manager = builtins.fetchTarball https://github.com/nix-community/home-manager/archive/release-25.05.tar.gz;
 
   # Custom packages
   termm = (pkgs.callPackage ./packages/termm.nix {});   # Get updated termm.nix from https://bitbucket.org/keiwop/termm_packaging
-  riscv32ec_toolchain = (pkgs.callPackage ./packages/riscv32ec_toolchain.nix {});
   kwin_focus_app = (pkgs.callPackage ./packages/kwin_focus_app.nix {});   # Get updated kwin_focus_app.nix from https://bitbucket.org/keiwop/kwin_focus_app
+  riscv32ec_toolchain = (pkgs.callPackage ./packages/riscv32ec_toolchain.nix {});
+  minichlink = (pkgs.callPackage ./packages/minichlink.nix {});
   nix_link_config = (pkgs.callPackage ./scripts/nix_link_config.nix { inherit user_name cfg_path; });
   create_direnv = (pkgs.callPackage ./scripts/create_direnv.nix { inherit cfg_path; });
 in
@@ -78,6 +79,7 @@ in
     tldr
     cryfs
     killall
+    usbutils # lsusb
 
     # System monitoring
     pv
@@ -89,6 +91,7 @@ in
     lm_sensors
     dysk
     wavemon
+    ntfy-sh
 
     # GUI packages
     kdePackages.kate
@@ -102,6 +105,7 @@ in
     cheese
     code-cursor
     gnome-calculator
+    kicad-small
 
     # Hyprland
     wofi
@@ -119,11 +123,13 @@ in
     direnv
     nix-prefetch-git
     pulseview
+    gnumake
 
     # Custom packages
     termm
     # riscv32ec_toolchain
-    kwin_focus_app
+    minichlink
+    # kwin_focus_app
     nix_link_config
     create_direnv
   ];
@@ -156,7 +162,7 @@ in
     shell = pkgs.zsh;
     description = "${user_name}";
     group = "${user_name}";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "dialout" ];
     packages = with pkgs; [
 
     ];
@@ -205,6 +211,8 @@ in
       ExecStart = "${nix_link_config}/bin/nix_link_config";
     };
   };
+
+  services.udev.packages = [ minichlink ];
 
 
   #############################################################################

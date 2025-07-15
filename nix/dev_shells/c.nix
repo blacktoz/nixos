@@ -7,6 +7,10 @@ pkgs.mkShell {
   packages = with pkgs; [
     gcc
     gdb
+    gnumake
+    pkg-config
+    udev
+    libusb1
   ];
 
 

@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
     rev = "v${version}";
     sha256 = "062d510rsj65kggljj640l7486ixpr9zykd2f5knwnacvqcjc0cw";
   };
-  # src = lib.cleanSource /_/src/js/kwin_focus_app;
+  # src = lib.cleanSource /_/src/js/kwin/focus_app;
 
   installPhase = ''
     mkdir -p $out/share/kwin/scripts/focus_app

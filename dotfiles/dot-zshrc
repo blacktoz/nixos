@@ -214,7 +214,7 @@ alias watch_disks_log="watch -n 1 'tail -n 16 /var/log/disks_states.log'"
 alias watch_system_log="watch -n 1 'tail -n 16 /var/log/arch_desktop.log'"
 alias watch_nvidia="watch -n 1 'sudo nvidia-smi'"
 alias watch_sensors="watch -n 1 'sudo sensors'"
-alias watch_dmesg="watch -n 1 'dmesg | tail -n 16'"
+alias watch_dmesg="watch -n 1 'sudo dmesg | tail -n 16'"
 alias watch_temp="watch -n 1 cat /sys/class/thermal/thermal_zone*/temp"
 
 # ¡Hola!

@@ -6,17 +6,17 @@
 let
   user_name = "keiwop";
   host_name = "nix-thinkpad";
-  cfg_path = "/_/etc/nixos";
   builder_addr = "arch-laptop";
   secrets = import ./secrets.nix;
 
-  # home-manager = builtins.fetchTarball https://github.com/nix-community/home-manager/archive/release-25.05.tar.gz;
+  machine_config = import ./machine_config/${host_name}.nix { inherit pkgs user_name; };
+  paths = import ./paths.nix { inherit user_name machine_config; };
 
   # Custom packages
+  link_config_files = (pkgs.callPackage ./scripts/link_config_files.nix { inherit (paths) linked_paths; });
+  create_direnv = (pkgs.callPackage ./scripts/create_direnv.nix { inherit (paths) nixos_path; });
   termm = (pkgs.callPackage ./packages/termm.nix {});   # Get updated termm.nix from https://bitbucket.org/keiwop/termm_packaging
   kwin_focus_app = (pkgs.callPackage ./packages/kwin_focus_app.nix {});   # Get updated kwin_focus_app.nix from https://bitbucket.org/keiwop/kwin_focus_app
-  nix_link_config = (pkgs.callPackage ./scripts/nix_link_config.nix { inherit user_name cfg_path; });
-  create_direnv = (pkgs.callPackage ./scripts/create_direnv.nix { inherit cfg_path; });
 in
 {
   #############################################################################
@@ -25,8 +25,7 @@ in
 
   imports = [
     ./hardware-configuration.nix
-    (import ./machine_config/${host_name}.nix { inherit pkgs user_name; })
-    (import ./app_config/syncthing.nix { user_name = user_name; host_name = host_name; cfg_path = cfg_path; secrets = secrets; })
+    (import ./app_config/syncthing.nix { user_name = user_name; host_name = host_name; cfg_path = paths.nixos_path; secrets = secrets; })
     # (import ./app_config/kwin.nix)
     # (import ./remote_build.nix { user_name = user_name; builder_addr = builder_addr; pkgs = pkgs; })
     # (import "${home-manager}/nixos")
@@ -125,12 +124,13 @@ in
     gnumake
 
     # Custom packages
+    link_config_files
+    create_direnv
     termm
     # riscv32ec_toolchain
     # minichlink
     # kwin_focus_app
-    nix_link_config
-    create_direnv
+    # nix_link_config
   ];
 
   programs.zsh = {
@@ -208,7 +208,7 @@ in
       Type = "oneshot";
       RemainAfterExit = true;
       Environment = "PATH=/run/current-system/sw/bin:/usr/bin:/bin";
-      ExecStart = "${nix_link_config}/bin/nix_link_config";
+      ExecStart = "${link_config_files}/bin/link_config_files";
     };
   };
 

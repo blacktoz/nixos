@@ -1,15 +1,18 @@
 
-{ pkgs, user_name, ... }:
+{ pkgs, user_name }:
 
 
 let
-  docker_config_path = "/_/etc/docker";
-  docker_install_path = "/_/dkr";
-
   minichlink = (pkgs.callPackage ../packages/minichlink.nix {});
   riscv32ec_toolchain = (pkgs.callPackage ../packages/riscv32ec_toolchain.nix {});
 in
 {
+  nixos_path = /_/etc/nixos;
+  linked_paths = [
+    { name="caddy"; remove=true; }
+    { name="pihole"; source = "/_/etc/docker/pihole"; target = "/_/dkr/pihole"; user="${user_name}"; }
+  ];
+
   environment.systemPackages = with pkgs; [
     minichlink
     riscv32ec_toolchain

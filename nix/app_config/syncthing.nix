@@ -10,8 +10,8 @@
     enable = true;
     user = "${user_name}";
     configDir = "/home/${user_name}/.config/syncthing";
-    key = "${cfg_path}/${host_name}/syncthing/key.pem";
-    cert = "${cfg_path}/${host_name}/syncthing/cert.pem";
+    key = "${cfg_path}/machines/${host_name}/syncthing/key.pem";
+    cert = "${cfg_path}/machines/${host_name}/syncthing/cert.pem";
     openDefaultPorts = true;
     overrideDevices = true; # Only use devices declared in this file, deletes those added from webui
     overrideFolders = true;

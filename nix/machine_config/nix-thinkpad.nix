@@ -1,11 +1,18 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C): 2025 - keiwop <keiwop.dev@gmail.com>
 
-{ pkgs, user_name }:
+{ pkgs, apps, user_name }:
 
 
 let
-  minichlink = (pkgs.callPackage ../packages/minichlink.nix {});
-  riscv32ec_toolchain = (pkgs.callPackage ../packages/riscv32ec_toolchain.nix {});
+  machine_apps = with pkgs; [
+    apps.custom.termm
+    # apps.custom.kwin_focus_app
+    apps.custom.minichlink
+    apps.custom.riscv32ec_toolchain
+  ];
 in
+
 {
   nixos_path = /_/etc/nixos;
   linked_paths = [
@@ -13,11 +20,14 @@ in
     { name="pihole"; source = "/_/etc/docker/pihole"; target = "/_/dkr/pihole"; user="${user_name}"; }
   ];
 
-  environment.systemPackages = with pkgs; [
-    minichlink
-    riscv32ec_toolchain
-  ];
+  environment.systemPackages = apps.core
+    ++ apps.dev
+    ++ apps.gui
+    ++ apps.media
+    ++ apps.misc
+    ++ machine_apps
+  ;
 
   users.users.${user_name}.extraGroups = ["dialout"];
-  services.udev.packages = [ minichlink ];
+  services.udev.packages = [ apps.custom.minichlink ];
 }

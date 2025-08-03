@@ -9,14 +9,13 @@ let
   builder_addr = "arch-laptop";
   secrets = import ./secrets.nix;
 
-  machine_config = import ./machine_config/${host_name}.nix { inherit pkgs user_name; };
-  paths = import ./paths.nix { inherit user_name machine_config; };
+  apps = pkgs.callPackage ./apps.nix {};
+  machine_config = pkgs.callPackage ./machine_config/${host_name}.nix { inherit apps user_name; };
+  paths = pkgs.callPackage ./paths.nix { inherit user_name machine_config; };
 
   # Custom packages
-  link_config_files = (pkgs.callPackage ./scripts/link_config_files.nix { inherit (paths) linked_paths; });
-  create_direnv = (pkgs.callPackage ./scripts/create_direnv.nix { inherit (paths) nixos_path; });
-  termm = (pkgs.callPackage ./packages/termm.nix {});   # Get updated termm.nix from https://bitbucket.org/keiwop/termm_packaging
-  kwin_focus_app = (pkgs.callPackage ./packages/kwin_focus_app.nix {});   # Get updated kwin_focus_app.nix from https://bitbucket.org/keiwop/kwin_focus_app
+  link_config_files = pkgs.callPackage ./scripts/link_config_files.nix { inherit (paths) linked_paths; };
+  create_direnv = pkgs.callPackage ./scripts/create_direnv.nix { inherit (paths) nixos_path; };
 in
 {
   #############################################################################
@@ -58,79 +57,9 @@ in
 
   nixpkgs.config.allowUnfree = true;
 
-  environment.systemPackages = with pkgs; [
-    # Core packages
-    zsh-completions
-    syncthing
-    stow
-    vim
-    wget
-    git
-    tree
-    screen
-    tmux
-    picocom
-    nmap
-    inetutils # traceroute + telnet
-    hexedit
-    fzf
-    tldr
-    cryfs
-    killall
-    usbutils # lsusb
-
-    # System monitoring
-    pv
-    iotop
-    iftop
-    iproute2  # ifstat
-    htop
-    btop
-    lm_sensors
-    dysk
-    wavemon
-    ntfy-sh
-
-    # GUI packages
-    kdePackages.kate
-    kdePackages.filelight
-    kdePackages.kconfig
-    kdotool
-    vscodium
-    gedit
-    gparted
-    evince
-    cheese
-    code-cursor
-    gnome-calculator
-    kicad-small
-
-    # Hyprland
-    wofi
-    waybar
-    hyprpaper
-    networkmanagerapplet
-
-    # Misc packages
-    f3
-    sl
-    cowsay
-    fortune
-
-    # Development packages (more in dev_shells)
-    direnv
-    nix-prefetch-git
-    pulseview
-    gnumake
-
-    # Custom packages
+  environment.systemPackages = (machine_config.environment.systemPackages or []) ++ [
     link_config_files
     create_direnv
-    termm
-    # riscv32ec_toolchain
-    # minichlink
-    # kwin_focus_app
-    # nix_link_config
   ];
 
   programs.zsh = {
@@ -138,7 +67,7 @@ in
     syntaxHighlighting.enable = true;
     autosuggestions.enable = true;
   };
-  
+
   programs.direnv.enable = true;
 
   programs.firefox.enable = true;

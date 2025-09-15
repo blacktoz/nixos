@@ -23,6 +23,7 @@ with pkgs; [
   cryfs
   killall
   usbutils # lsusb
+  pciutils # lspci
 
   # System monitoring
   pv

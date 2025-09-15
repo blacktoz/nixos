@@ -8,4 +8,5 @@ with pkgs; [
   direnv
   nix-prefetch-git
   gnumake
+  android-tools     # adb, fastboot
 ]

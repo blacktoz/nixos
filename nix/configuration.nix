@@ -4,9 +4,14 @@
 { config, pkgs, ... }:
 
 let
-  user_name = "keiwop";
-  host_name = "nix-thinkpad";
-  builder_addr = "arch-laptop";
+  local_config = 
+  if builtins.pathExists ./local_config.nix
+  then import ./local_config.nix
+  else abort "nixos/nix/local_config.nix not found";
+
+  user_name = local_config.user_name or "keiwop";
+  host_name = local_config.host_name or "nix-thinkpad";
+  builder_addr = local_config.builder_addr or "arch-laptop";
   secrets = import ./secrets.nix;
 
   apps = pkgs.callPackage ./apps.nix {};

@@ -107,11 +107,15 @@ in
 
   # home-manager.users.${user_name} = import ./home.nix { inherit pkgs config; };
 
-  # system.activationScripts.copy_ssh_keys = ''
-  #   mkdir -p "/home/${user_name}/.ssh"
-  #   cp "${cfg_path}/${host_name}/ssh/*" "/home/${user_name}/.ssh/"
-  #   chown -R "${user_name}:${user_name}" "/home/${user_name}/.ssh"
-  # '';
+  system.activationScripts.copy_ssh_keys = ''
+    SSH_DIR="/home/${user_name}/.ssh"
+    if [ ! -e $SSH_DIR/id_ed25519 ]; then
+      mkdir -p $SSH_DIR
+      cp "${paths.nix_config_path}/machines/${host_name}/ssh/id_ed25519"* $SSH_DIR/
+      chmod 600 $SSH_DIR/id_ed25519
+      chown -R "${user_name}:${user_name}" $SSH_DIR
+    fi
+  '';
 
 
   #############################################################################
@@ -122,6 +126,7 @@ in
     enable = true;
     settings = {
       PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
       PubkeyAuthentication = true;
     };
     extraConfig = ''

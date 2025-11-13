@@ -41,7 +41,7 @@ download_configuration(){
     if [ ! -e $NIXOS_PATH ]; then
         mkdir -p $NIXOS_PATH
         echo "Fetching NixOS configuration from git repository"
-        nix-shell -p git clone $GIT_DOWNLOAD $NIXOS_PATH
+        nix-shell -p git --run "git clone $GIT_DOWNLOAD $NIXOS_PATH"
         if [ "$FLAG_DOWNLOAD" = true ]; then 
             exit 0
         fi

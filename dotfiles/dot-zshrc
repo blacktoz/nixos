@@ -272,6 +272,10 @@ alias ext4_no_journal="sudo mke2fs -t ext4 -O \^has_journal /dev/sdz1"
 # Get current weather for wxtoimg
 alias update_weather="wget --directory-prefix=/tmp https://celestrak.org/NORAD/elements/weather.txt; cp -v /tmp/weather.txt ~/.wxtoimg/weather.txt"
 
+alias dkrp="docker compose pull"
+alias dkru="docker compose up -d"
+alias dkrl="docker logs -f"
+# alias esprun=""
 # Clean orphaned shortcuts
 # alias kde_clean_shortcuts="qdbus org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.cleanUp"
 # alias kde_read_shortcut="kreadconfig6 --file kglobalshortcutsrc --group kwin  --key 'Focus Firefox'"
@@ -729,6 +733,25 @@ check_honeypot(){
         echo "Users waiting endlessly: $nb_conn"
     fi
 }
+
+
+esprun(){
+    if [[ -z $1 ]]; then
+        echo "Undefined esphome config file"
+        echo "Usage: esprun config_file [ip_address/tty_path]"
+        exit 1
+    fi
+    docker exec -it esphome bash -c "rm -rf /config/{*.yaml,bkp,c,common,components}"
+    docker exec -it esphome bash -c "cp -a /src/* /config/"
+
+    if [[ -z $2 ]]; then
+        local device=/dev/ttyUSB0
+    else
+        local device=$2
+    fi
+    docker exec -it esphome esphome run $1 --device $device
+}
+
 
 ################################################################################
 # Legacy functions

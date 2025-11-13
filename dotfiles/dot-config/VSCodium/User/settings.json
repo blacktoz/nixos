@@ -47,5 +47,6 @@
             "backgroundColor": "#dc322f20",
             "bold": true,
         }
-    ]
+    ],
+    "workbench.iconTheme": "material-icon-theme"
 }

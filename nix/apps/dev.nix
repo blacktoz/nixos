@@ -9,4 +9,6 @@ with pkgs; [
   nix-prefetch-git
   gnumake
   android-tools     # adb, fastboot
+  flashrom
+  vbindiff
 ]

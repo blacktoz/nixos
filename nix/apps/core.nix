@@ -37,8 +37,5 @@ with pkgs; [
   wavemon
   ntfy-sh
   nix-output-monitor
-
-  # Custom packages
-  # link_config_files
-  # create_direnv
+  powertop
 ]

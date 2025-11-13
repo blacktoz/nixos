@@ -1,2 +1,6 @@
 /dotfiles/dot-screenlogs/*.log
 bkp/
+/nix/machines/nix-thinkpad
+/nix/machines/nix-ebook
+/nix/machines/nix-laptop
+/nix/machines/nibbler

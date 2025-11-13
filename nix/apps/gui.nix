@@ -13,7 +13,6 @@ with pkgs; [
   evince
   cheese
   pulseview
-  code-cursor
   gnome-calculator
   kicad-small
   gimp3
@@ -21,6 +20,7 @@ with pkgs; [
   # KDE
   kdePackages.kconfig
   kdotool
+  kdePackages.kde-gtk-config
 
   # Hyprland
   wofi
@@ -28,7 +28,12 @@ with pkgs; [
   hyprpaper
   networkmanagerapplet
 
-  # Custom packages
-  # termm
-  # kwin_focus_app
+  # Themes
+  (lib.hiPrio papirus-icon-theme)  # Icons
+  papirus-folders     # Icons
+
+  qogir-kde           # Plasma theme
+  qogir-theme         # GTK theme
+
+  bibata-cursors
 ]

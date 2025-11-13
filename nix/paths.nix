@@ -4,17 +4,14 @@
 { user_name, machine_config ? {} }:
 
 let
-  nixos_path = "/_/etc/nixos";
-  nix_config_path = "${nixos_path}/nix";
-  dotfiles_path = "${nixos_path}/dotfiles";
-  docker_config_path = "/_/etc/docker";
-  docker_install_path = "/_/dkr";
+  nixos_path = machine_config.nixos_path or "/_/etc/nixos";
+  nix_config_path = machine_config.nix_config_path or "${nixos_path}/nix";
+  dotfiles_path = machine_config.dotfiles_path or "${nixos_path}/dotfiles";
 
+  machine_linked_paths = machine_config.linked_paths or [];
   default_linked_paths = [
     { name="nix_config"; source="${nix_config_path}"; target="/etc/nixos"; }
     { name="dotfiles"; source="${dotfiles_path}"; target="/home/${user_name}"; user="${user_name}"; dotfiles=true; }
-    { name="caddy"; source="${docker_config_path}/caddy"; target="${docker_install_path}/caddy"; user="${user_name}"; }
-    { name="ntfy"; source="${docker_config_path}/ntfy"; target="${docker_install_path}/ntfy"; user="${user_name}"; }
   ];
 
   # Merging function for paths defined in machine config
@@ -28,10 +25,8 @@ let
       filtered = builtins.filter (x: !(x ? remove && x.remove)) (builtins.attrValues merged);
     in
       filtered;
-
-  machine_linked_paths = machine_config.linked_paths or [];
 in
 {
-  inherit nixos_path nix_config_path dotfiles_path docker_config_path docker_install_path;
+  inherit nixos_path nix_config_path dotfiles_path;
   linked_paths = mergeLinkedPaths default_linked_paths machine_linked_paths;
 }

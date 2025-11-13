@@ -4,18 +4,16 @@
 { config, pkgs, ... }:
 
 let
-  local_config = 
-  if builtins.pathExists ./local_config.nix
-  then import ./local_config.nix
-  else abort "nixos/nix/local_config.nix not found";
-
-  user_name = local_config.user_name or "keiwop";
-  host_name = local_config.host_name or "nix-thinkpad";
-  builder_addr = local_config.builder_addr or "arch-laptop";
-  secrets = import ./secrets.nix;
+  local_config = import ./local_config.nix;
+  host_name = local_config.host_name or (abort "undefined host_name in local_config.nix");
 
   apps = pkgs.callPackage ./apps.nix {};
-  machine_config = pkgs.callPackage ./machine_config/${host_name}.nix { inherit apps user_name; };
+  machine_config = import ./machines/${host_name}/${host_name}.nix { inherit apps; };
+
+  user_name = machine_config.user_name or (abort "undefined user_name in ${host_name}.nix");
+  secrets = import ./machines/${host_name}/secrets.nix;
+  builder_addr = machine_config.builder_addr;
+
   paths = pkgs.callPackage ./paths.nix { inherit user_name machine_config; };
 
   # Custom packages
@@ -28,8 +26,9 @@ in
   #############################################################################
 
   imports = [
-    ./hardware-configuration.nix
-    (import ./app_config/syncthing.nix { user_name = user_name; host_name = host_name; cfg_path = paths.nixos_path; secrets = secrets; })
+    /etc/nixos/hardware-configuration.nix
+    machine_config.module
+    # (import ./app_config/syncthing.nix { user_name = user_name; host_name = host_name; cfg_path = paths.nixos_path; secrets = secrets; })
     # (import ./app_config/kwin.nix)
     # (import ./remote_build.nix { user_name = user_name; builder_addr = builder_addr; pkgs = pkgs; })
     # (import "${home-manager}/nixos")
@@ -53,7 +52,7 @@ in
   boot.loader.efi.canTouchEfiVariables = true;
 
   boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.kernelParams = [ "elevator=noop" "mitigations=off" ];
+  boot.kernelParams = [ "mitigations=off" ];
 
 
   #############################################################################
@@ -62,7 +61,7 @@ in
 
   nixpkgs.config.allowUnfree = true;
 
-  environment.systemPackages = (machine_config.environment.systemPackages or []) ++ [
+  environment.systemPackages = [
     link_config_files
     create_direnv
   ];
@@ -210,7 +209,7 @@ in
   # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
-  services.displayManager.defaultSession = "plasma";
+  services.displayManager.defaultSession = "plasmax11";
 
   # Enable automatic login for the user.
   services.displayManager.autoLogin.enable = true;
@@ -222,6 +221,7 @@ in
   ];
 
   programs.hyprland.enable = true;
+  programs.dconf.enable = true;
 
   # TODO
   # programs.dconf.profiles.user.databases = [ {

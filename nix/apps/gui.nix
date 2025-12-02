@@ -16,6 +16,7 @@ with pkgs; [
   gnome-calculator
   kicad-small
   gimp3
+  inkscape
 
   # KDE
   kdePackages.kconfig

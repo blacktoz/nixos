@@ -15,6 +15,7 @@ in
 
   linked_paths = [
     { name="esphome"; source="/_/etc/docker/esphome"; target="/_/dkr/esphome"; user="${user_name}"; }
+    { name="ha_dev"; source="/_/etc/docker/ha_dev"; target="/_/dkr/ha_dev"; user="${user_name}"; }
   ];
 
   module = { config, pkgs, ... }: {

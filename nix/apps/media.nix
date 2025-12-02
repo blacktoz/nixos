@@ -5,6 +5,7 @@
 
 with pkgs; [
   # Multimedia packages
-  jellyfin-media-player
+  # jellyfin-media-player # Removed due to webkit vulnerabilities unpatched
+  jellyfin-mpv-shim
   discord
 ]

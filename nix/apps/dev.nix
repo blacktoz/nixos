@@ -11,4 +11,5 @@ with pkgs; [
   android-tools     # adb, fastboot
   flashrom
   vbindiff
+  python3
 ]

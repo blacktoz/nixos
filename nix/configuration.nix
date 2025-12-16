@@ -94,11 +94,7 @@ in
     shell = pkgs.zsh;
     description = "${user_name}";
     group = "${user_name}";
-    # extraGroups = [ "networkmanager" "wheel" "dialout" ];
     extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-
-    ];
   };
 
   users.groups.${user_name}.gid = 1000;
@@ -171,40 +167,23 @@ in
   ### Locale ##################################################################
   #############################################################################
 
-  time.timeZone = "Europe/Paris";
+  # time.timeZone = "Europe/Paris";
 
-  console.keyMap = "fr";
+  # console.keyMap = "fr";
 
-  i18n.defaultLocale = "en_US.UTF-8";
+  # i18n.defaultLocale = "en_US.UTF-8";
 
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "fr_FR.UTF-8";
-    LC_IDENTIFICATION = "fr_FR.UTF-8";
-    LC_MEASUREMENT = "fr_FR.UTF-8";
-    LC_MONETARY = "fr_FR.UTF-8";
-    LC_NAME = "fr_FR.UTF-8";
-    LC_NUMERIC = "fr_FR.UTF-8";
-    LC_PAPER = "fr_FR.UTF-8";
-    LC_TELEPHONE = "fr_FR.UTF-8";
-    LC_TIME = "fr_FR.UTF-8";
-  };
-
-
-  #############################################################################
-  ### Xorg ####################################################################
-  #############################################################################
-  
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-
-  # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "fr";
-    variant = "azerty";
-  };
-
-  # Enable touchpad support (enabled by default in most desktopManager).
-  # services.xserver.libinput.enable = true;
+  # i18n.extraLocaleSettings = {
+  #   LC_ADDRESS = "fr_FR.UTF-8";
+  #   LC_IDENTIFICATION = "fr_FR.UTF-8";
+  #   LC_MEASUREMENT = "fr_FR.UTF-8";
+  #   LC_MONETARY = "fr_FR.UTF-8";
+  #   LC_NAME = "fr_FR.UTF-8";
+  #   LC_NUMERIC = "fr_FR.UTF-8";
+  #   LC_PAPER = "fr_FR.UTF-8";
+  #   LC_TELEPHONE = "fr_FR.UTF-8";
+  #   LC_TIME = "fr_FR.UTF-8";
+  # };
 
 
   #############################################################################
@@ -214,11 +193,16 @@ in
   # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
-  services.displayManager.defaultSession = "plasmax11";
 
   # Enable automatic login for the user.
   services.displayManager.autoLogin.enable = true;
-  services.displayManager.autoLogin.user = "keiwop";
+  services.displayManager.autoLogin.user = "${user_name}";
+
+  # Enable the X11 windowing system.
+  services.xserver.enable = true;
+
+  # Enable touchpad support (enabled by default in most desktopManager).
+  services.libinput.enable = true;
 
   # Don't install all plasma6 packages
   environment.plasma6.excludePackages = with pkgs.kdePackages; [
@@ -246,7 +230,6 @@ in
   # Enable CUPS to print documents.
   services.printing = {
     enable = true;
-    drivers = [ pkgs.samsung-unified-linux-driver ];
   };
 
   # Enable sound with pipewire.
@@ -274,8 +257,4 @@ in
   #   enable = true;
   #   enableSSHSupport = true;
   # };
-
-  # Don't touch unless you go read about it
-  system.stateVersion = "25.05";
-
 }

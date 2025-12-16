@@ -11,7 +11,7 @@ let
 in
 
 {
-  inherit user_name builder_addr; # More info about these variables in the README
+  inherit user_name builder_addr;
 
   linked_paths = [
     { name="esphome"; source="/_/etc/docker/esphome"; target="/_/dkr/esphome"; user="${user_name}"; }
@@ -23,6 +23,10 @@ in
       (import ./syncthing/syncthing.nix { user_name = user_name; secrets = secrets; })
     ];
   
+    #############################################################################
+    ### Apps ####################################################################
+    #############################################################################
+
     environment.systemPackages = with pkgs;
       apps.core
       ++ apps.dev
@@ -34,13 +38,17 @@ in
       apps.custom.termm
       apps.custom.minichlink
       apps.custom.riscv32ec_toolchain
+      apps.custom.jellyfin_desktop
 
       siril
     ];
 
-    virtualisation.docker = {
-      enable = true;
-    };
+
+    #############################################################################
+    ### Services ################################################################
+    #############################################################################
+
+    services.displayManager.defaultSession = "plasmax11";
 
     users.users.${user_name}.extraGroups = [ "dialout" "docker" ];
     services.udev.packages = [ apps.custom.minichlink ];
@@ -48,5 +56,73 @@ in
       # CH341a programmer
       SUBSYSTEM=="usb", ATTR{idVendor}=="1a86", ATTR{idProduct}=="5512", MODE="0660", GROUP="wheel"
     '';
+
+    virtualisation.docker = {
+      enable = true;
+    };
+
+    services.printing.drivers = [ pkgs.samsung-unified-linux-driver ];
+
+
+    #############################################################################
+    ### Locale ##################################################################
+    #############################################################################
+
+    time.timeZone = "Europe/Paris";
+
+    console.keyMap = "fr";
+
+    i18n.defaultLocale = "en_US.UTF-8";
+
+    i18n.extraLocaleSettings = {
+      LC_ADDRESS = "fr_FR.UTF-8";
+      LC_IDENTIFICATION = "fr_FR.UTF-8";
+      LC_MEASUREMENT = "fr_FR.UTF-8";
+      LC_MONETARY = "fr_FR.UTF-8";
+      LC_NAME = "fr_FR.UTF-8";
+      LC_NUMERIC = "fr_FR.UTF-8";
+      LC_PAPER = "fr_FR.UTF-8";
+      LC_TELEPHONE = "fr_FR.UTF-8";
+      LC_TIME = "fr_FR.UTF-8";
+    };
+
+    services.xserver.xkb = {
+      layout = "fr";
+      variant = "azerty";
+      options = "ctrl:nocaps";  # Remap CapsLock to Control
+    };
+
+
+    #############################################################################
+    ### Laptop ##################################################################
+    #############################################################################
+
+    powerManagement.powertop.enable = true;
+
+
+    #############################################################################
+    ### HW Specific #############################################################
+    #############################################################################
+
+    # Bodge to get the battery estimation working
+    systemd.services."fix-battery-module" = {
+      enable = true;
+      description = "Reloads the battery module after suspend";
+      wantedBy = [ "suspend.target" ];
+      after = [ "suspend.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = false;
+        Environment = "PATH=/run/current-system/sw/bin:/usr/bin:/bin";
+        ExecStart = "${pkgs.writeShellScript "fix_battery_module" ''
+          #! /bin/sh
+          modprobe -r battery
+          modprobe battery
+        ''}";
+      };
+    };
+
+    # Don't touch unless you go read about it
+    system.stateVersion = "25.05";
   };
 }

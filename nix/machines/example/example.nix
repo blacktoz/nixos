@@ -5,7 +5,7 @@
 
 
 let
-  user_name = "keiwop";
+  user_name = "ryo";
   builder_addr = "arch-laptop";
   secrets = import ./secrets.nix;
 in

@@ -5,5 +5,5 @@
 # Add this file to .stignore if you're sharing the whole nixos directory between multiple computers
 
 {
-  host_name = "nix-thinkpad";
+  host_name = "nix-ryo";
 }

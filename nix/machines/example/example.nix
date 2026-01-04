@@ -123,6 +123,6 @@ in
     };
 
     # Don't touch unless you go read about it
-    system.stateVersion = "25.05";
+    system.stateVersion = "25.11";
   };
 }

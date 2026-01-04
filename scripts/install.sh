@@ -3,14 +3,14 @@
 # Copyright (C): 2025 - keiwop <keiwop.dev@gmail.com>
 
 
-USER_NAME=keiwop
-HOST_NAME=nix-ebook2
+USER_NAME=ryo
+HOST_NAME=nix-ryo
 
 NIXOS_PATH=/_/etc/nixos
 NIX_DIR=$NIXOS_PATH/nix
 DOT_DIR=$NIXOS_PATH/dotfiles
 
-GIT_DOWNLOAD="https://github.com/keiwop/nixos.git"
+GIT_DOWNLOAD="https://github.com/blacktoz/nixos.git"
 SSH_DOWNLOAD="nibbler:/_/etc/nixos"
 
 FLAG_DOWNLOAD=false

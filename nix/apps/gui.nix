@@ -22,6 +22,7 @@ with pkgs; [
   kdePackages.kconfig
   kdotool
   kdePackages.kde-gtk-config
+  kdePackages.kdeconnect-kde
 
   # Hyprland
   wofi

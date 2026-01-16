@@ -10,8 +10,9 @@ let
   riscv32ec_toolchain = pkgs.callPackage ../packages/riscv32ec_toolchain.nix { };
   cursor = pkgs.callPackage ../packages/cursor.nix { };
   jellyfin_desktop = pkgs.callPackage ../packages/jellyfin_desktop.nix { };
+  floorp-bin = pkgs.callPackage ../packages/floorp-bin.nix { };
 in
 
 {
-  inherit termm kwin_focus_app minichlink riscv32ec_toolchain cursor jellyfin_desktop;
+  inherit termm kwin_focus_app minichlink riscv32ec_toolchain cursor jellyfin_desktop floorp-bin;
 }

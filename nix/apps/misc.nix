@@ -9,4 +9,6 @@ with pkgs; [
   sl
   cowsay
   fortune
+  jellyfin-rpc
+  android-tools
 ]

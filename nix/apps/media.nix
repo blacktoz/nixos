@@ -7,5 +7,14 @@ with pkgs; [
   # Multimedia packages
   # jellyfin-media-player # Removed due to webkit vulnerabilities unpatched
   jellyfin-mpv-shim
-  discord
+  spotify
+  audacity
+  ffmpeg
+  mkvtoolnix
+  calibre
+
+  (discord.override {
+    withVencord = true; # can do this here too
+  })
+
 ]

@@ -149,6 +149,22 @@ in
   # services.udev.packages = [ minichlink ];
 
 
+
+  fonts = {
+    enableDefaultPackages = true;
+
+    packages = with pkgs; [
+      jetbrains-mono
+      maple-mono.truetype
+      maple-mono.NF
+      nerd-fonts.jetbrains-mono
+    ];
+
+    fontconfig.enable = true;
+  };
+
+
+
   #############################################################################
   ### Networking ##############################################################
   #############################################################################
@@ -242,6 +258,7 @@ in
     pulse.enable = true;
     #media-session.enable = true;
   };
+
 
 
   #############################################################################

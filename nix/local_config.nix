@@ -1,3 +1,3 @@
 {
-  host_name = "nix-ryo";
+  host_name = "nix-sylveon";
 }
